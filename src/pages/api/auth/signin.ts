@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { supabase } from "../../../lib/supabase";
 import type { Provider } from "@supabase/supabase-js";
 
-export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+export const POST: APIRoute = async ({ request, cookies, redirect, url }) => {
     const formData = await request.formData();
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
@@ -11,10 +11,14 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     const validProviders = ["google", "github", "discord"];
 
     if (provider && validProviders.includes(provider)) {
+        // Detectar l'URL base (producció o desenvolupament)
+        const origin = url.origin;
+        const callbackUrl = `${origin}/api/auth/callback`;
+
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider as Provider,
             options: {
-                redirectTo: "http://localhost:4321/api/auth/callback"
+                redirectTo: callbackUrl
             },
         });
 
