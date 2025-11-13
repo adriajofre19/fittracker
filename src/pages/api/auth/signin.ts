@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider as Provider,
             options: {
-                redirectTo: "https://fittracker-ruby.vercel.app/api/auth/callback"
+                redirectTo: "http://localhost:4321/api/auth/callback"
             },
         });
 
@@ -45,5 +45,5 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     cookies.set("sb-refresh-token", refresh_token, {
         path: "/",
     });
-    return redirect("/dashboard");
+    return redirect("/");
 };

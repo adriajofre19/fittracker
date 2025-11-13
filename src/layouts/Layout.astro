@@ -4,9 +4,10 @@ import Navbar from "../components/Navbar";
 
 interface Props {
 	title?: string;
+	hideNavbar?: boolean;
 }
 
-const { title = "Astro Basics" } = Astro.props;
+const { title = "Astro Basics", hideNavbar = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,7 +20,7 @@ const { title = "Astro Basics" } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-		<Navbar client:load />
+		{!hideNavbar && <Navbar client:load />}
 		<slot />
 	</body>
 </html>
