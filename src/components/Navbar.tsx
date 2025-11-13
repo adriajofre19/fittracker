@@ -135,6 +135,16 @@ export default function Navbar() {
                                                 Àpats
                                             </NavigationMenuLink>
                                         </NavigationMenuItem>
+                                        <NavigationMenuItem>
+                                            <NavigationMenuLink
+                                                href="/routines"
+                                                className={cn(
+                                                    "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus:bg-neutral-100 focus:text-neutral-900 focus:outline-none"
+                                                )}
+                                            >
+                                                Rutines
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
                                     </>
                                 )}
                             </NavigationMenuList>
@@ -245,126 +255,126 @@ export default function Navbar() {
 
             </nav>
 
-            {/* Mobile Menu - Outside nav for proper z-index */}
+            {/* Mobile Menu - Normal dropdown without modal */}
             {mobileMenuOpen && (
-                <>
-                    {/* Overlay */}
-                    <div
-                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] sm:hidden"
-                        onClick={() => setMobileMenuOpen(false)}
-                    />
-                    {/* Menu */}
-                    <div className="fixed top-16 left-0 right-0 bottom-0 sm:hidden border-t border-neutral-200 bg-white shadow-xl z-[70] overflow-y-auto">
-                        <div className="container px-4 py-6 space-y-1">
-                            {/* User Info Section */}
-                            {isAuthenticated && (
-                                <div className="pb-4 mb-4 border-b border-neutral-200">
-                                    <div className="flex items-center gap-3 px-3 py-2">
-                                        <Avatar className="h-12 w-12 border-2 border-neutral-200">
-                                            <AvatarImage src="" alt={userName || "User"} />
-                                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold text-lg">
-                                                {userName?.charAt(0).toUpperCase() || "U"}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1">
-                                            <div className="text-base font-semibold text-neutral-900">
-                                                {userName || "User"}
-                                            </div>
-                                            <div className="text-sm text-neutral-500">
-                                                {userEmail || ""}
-                                            </div>
+                <div className="sm:hidden border-t border-neutral-200 bg-white shadow-md">
+                    <div className="container px-4 py-4 space-y-1">
+                        {/* User Info Section */}
+                        {isAuthenticated && (
+                            <div className="pb-3 mb-3 border-b border-neutral-200">
+                                <div className="flex items-center gap-3 px-2 py-2">
+                                    <Avatar className="h-10 w-10 border-2 border-neutral-200">
+                                        <AvatarImage src="" alt={userName || "User"} />
+                                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+                                            {userName?.charAt(0).toUpperCase() || "U"}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-semibold text-neutral-900">
+                                            {userName || "User"}
+                                        </div>
+                                        <div className="text-xs text-neutral-500">
+                                            {userEmail || ""}
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
-                            {/* Navigation Links */}
-                            <a
-                                href="/"
-                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <Home className="h-5 w-5" />
-                                Inici
-                            </a>
+                        {/* Navigation Links */}
+                        <a
+                            href="/"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            <Home className="h-4 w-4" />
+                            Inici
+                        </a>
 
-                            {isAuthenticated && (
-                                <>
-                                    <a
-                                        href="/sleep"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <Moon className="h-5 w-5" />
-                                        Son
-                                    </a>
-                                    <a
-                                        href="/meals"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <UtensilsCrossed className="h-5 w-5" />
-                                        Àpats
-                                    </a>
-                                </>
-                            )}
+                        {isAuthenticated && (
+                            <>
+                                <a
+                                    href="/sleep"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <Moon className="h-4 w-4" />
+                                    Son
+                                </a>
+                                <a
+                                    href="/meals"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <UtensilsCrossed className="h-4 w-4" />
+                                    Àpats
+                                </a>
+                                <a
+                                    href="/routines"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <Activity className="h-4 w-4" />
+                                    Rutines
+                                </a>
+                            </>
+                        )}
 
-                            {/* Separator */}
-                            {isAuthenticated && (
-                                <div className="pt-4 mt-4 border-t border-neutral-200 space-y-1">
-                                    <a
-                                        href="#"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <User className="h-5 w-5" />
-                                        Perfil
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <Settings className="h-5 w-5" />
-                                        Configuració
-                                    </a>
-                                    <button
-                                        onClick={() => {
-                                            handleSignOut();
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-red-600 hover:bg-red-50 transition-colors"
-                                    >
-                                        <LogOut className="h-5 w-5 text-red-600" />
-                                        Tancar sessió
-                                    </button>
-                                </div>
-                            )}
+                        {/* Separator */}
+                        {isAuthenticated && (
+                            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+                                <a
+                                    href="#"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <User className="h-4 w-4" />
+                                    Perfil
+                                </a>
+                                <a
+                                    href="#"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <Settings className="h-4 w-4" />
+                                    Configuració
+                                </a>
+                                <button
+                                    onClick={() => {
+                                        handleSignOut();
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                                >
+                                    <LogOut className="h-4 w-4 text-red-600" />
+                                    Tancar sessió
+                                </button>
+                            </div>
+                        )}
 
-                            {/* Auth Buttons */}
-                            {!isAuthenticated && (
-                                <div className="pt-4 mt-4 border-t border-neutral-200 space-y-2">
-                                    <Button
-                                        variant="outline"
-                                        asChild
-                                        className="w-full border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-900"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <a href="/signin">Iniciar sessió</a>
-                                    </Button>
-                                    <Button
-                                        variant="default"
-                                        asChild
-                                        className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <a href="/register">Registrar-se</a>
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
+                        {/* Auth Buttons */}
+                        {!isAuthenticated && (
+                            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-2">
+                                <Button
+                                    variant="outline"
+                                    asChild
+                                    className="w-full border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-900"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <a href="/signin">Iniciar sessió</a>
+                                </Button>
+                                <Button
+                                    variant="default"
+                                    asChild
+                                    className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <a href="/register">Registrar-se</a>
+                                </Button>
+                            </div>
+                        )}
                     </div>
-                </>
+                </div>
             )}
         </>
     );

@@ -1,17 +1,40 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { SleepRecord, Meal } from "../../types";
+import type { SleepRecord, Meal, Routine } from "../../types";
 import { format } from "date-fns";
 import { ca } from "date-fns/locale";
-import { Moon, UtensilsCrossed, Droplet } from "lucide-react";
+import { Moon, UtensilsCrossed, Droplet, Activity, Zap, Dumbbell, Footprints } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface DaySummaryProps {
     date: Date;
     sleepRecord?: SleepRecord | null;
     mealRecord?: Meal | null;
+    routines?: Routine[];
 }
 
-export default function DaySummary({ date, sleepRecord, mealRecord }: DaySummaryProps) {
+const routineTypeLabels = {
+    athletics: "Atletisme",
+    running: "Rodatge",
+    gym: "Gimnàs",
+    steps: "Passos",
+};
+
+const routineTypeIcons = {
+    athletics: Activity,
+    running: Zap,
+    gym: Dumbbell,
+    steps: Footprints,
+};
+
+const routineTypeColors = {
+    athletics: "bg-blue-100 text-blue-700",
+    running: "bg-green-100 text-green-700",
+    gym: "bg-purple-100 text-purple-700",
+    steps: "bg-orange-100 text-orange-700",
+};
+
+export default function DaySummary({ date, sleepRecord, mealRecord, routines = [] }: DaySummaryProps) {
     const dateStr = format(date, "yyyy-MM-dd");
 
     const calculateMealTotals = (meal: Meal) => {
@@ -176,6 +199,82 @@ export default function DaySummary({ date, sleepRecord, mealRecord }: DaySummary
                                 onClick={() => window.location.href = `/meals`}
                             >
                                 Afegir registre d'àpats
+                            </Button>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Resum de Rutines */}
+            <Card className="bg-white border border-neutral-200 shadow-sm">
+                <CardHeader>
+                    <CardTitle className="text-neutral-900 flex items-center gap-2">
+                        <Activity className="h-5 w-5" />
+                        Rutines d'Entrenament
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {routines.length > 0 ? (
+                        <div className="space-y-3">
+                            {routines.map((routine) => {
+                                const Icon = routineTypeIcons[routine.routine_type];
+                                return (
+                                    <div key={routine.id} className="p-3 border border-neutral-200 rounded-lg bg-neutral-50">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <Icon className="h-4 w-4 text-neutral-700" />
+                                                <span className="font-medium text-neutral-900">
+                                                    {routineTypeLabels[routine.routine_type]}
+                                                </span>
+                                            </div>
+                                            <Badge className={routineTypeColors[routine.routine_type]}>
+                                                {routine.routine_type}
+                                            </Badge>
+                                        </div>
+                                        {routine.routine_type === "athletics" && routine.athletics_data && (
+                                            <div className="text-sm text-neutral-600">
+                                                {routine.athletics_data.series?.length || 0} sèries
+                                            </div>
+                                        )}
+                                        {routine.routine_type === "running" && routine.running_data && (
+                                            <div className="text-sm text-neutral-600">
+                                                {routine.running_data.distance_km} km en {routine.running_data.duration_minutes} min
+                                            </div>
+                                        )}
+                                        {routine.routine_type === "gym" && routine.gym_data && (
+                                            <div className="text-sm text-neutral-600">
+                                                {routine.gym_data.exercises?.length || 0} exercicis
+                                            </div>
+                                        )}
+                                        {routine.routine_type === "steps" && routine.steps_count !== undefined && (
+                                            <div className="text-sm text-neutral-600">
+                                                {routine.steps_count.toLocaleString()} passos
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            <div className="pt-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full"
+                                    onClick={() => window.location.href = `/routines`}
+                                >
+                                    Veure detalls
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-4">
+                            <p className="text-sm text-neutral-500 mb-3">No hi ha rutines registrades</p>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full"
+                                onClick={() => window.location.href = `/routines`}
+                            >
+                                Afegir rutina
                             </Button>
                         </div>
                     )}

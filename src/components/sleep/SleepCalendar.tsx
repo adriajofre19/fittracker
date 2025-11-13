@@ -40,9 +40,12 @@ export default function SleepCalendar({
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
     const startDate = new Date(monthStart);
-    startDate.setDate(startDate.getDate() - getDay(startDate) || 7); // Ajustar al dilluns
+    // Ajustar al dilluns: getDay() retorna 0=diumenge, 1=dilluns, etc.
+    // Si és diumenge (0), retrocedir 6 dies; si és dilluns (1), retrocedir 0 dies, etc.
+    startDate.setDate(startDate.getDate() - ((getDay(startDate) + 6) % 7));
     const endDate = new Date(monthEnd);
-    endDate.setDate(endDate.getDate() + (7 - getDay(endDate)) % 7); // Ajustar al diumenge
+    // Ajustar al diumenge: si acaba en diumenge (0), avançar 0 dies; si acaba en dilluns (1), avançar 6 dies, etc.
+    endDate.setDate(endDate.getDate() + (6 - getDay(endDate)) % 7);
     
     const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 

@@ -1,38 +1,57 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import type { Meal } from "../../types";
+import type { Routine } from "../../types";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, getDay } from "date-fns";
 import { ca } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface MealsCalendarProps {
+interface RoutinesCalendarProps {
     selectedDate: Date | undefined;
     onDateSelect: (date: Date | undefined) => void;
-    meals: Meal[];
+    routines: Routine[];
 }
 
 const weekDays = ["DL", "DT", "DM", "DJ", "DV", "DS", "DG"];
 
-export default function MealsCalendar({
+const getRoutineTypeColor = (type: string): string => {
+    switch (type) {
+        case "athletics": return "bg-blue-500";
+        case "running": return "bg-green-500";
+        case "gym": return "bg-purple-500";
+        case "steps": return "bg-orange-500";
+        default: return "bg-neutral-400";
+    }
+};
+
+export default function RoutinesCalendar({
     selectedDate,
     onDateSelect,
-    meals,
-}: MealsCalendarProps) {
+    routines,
+}: RoutinesCalendarProps) {
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [markedDates, setMarkedDates] = useState<Map<string, Meal>>(new Map());
+    const [markedDates, setMarkedDates] = useState<Map<string, Routine[]>>(new Map());
 
     useEffect(() => {
-        const datesMap = new Map<string, Meal>();
-        meals.forEach((meal) => {
-            datesMap.set(meal.meal_date, meal);
+        const datesMap = new Map<string, Routine[]>();
+        routines.forEach((routine) => {
+            const dateStr = routine.routine_date;
+            if (!datesMap.has(dateStr)) {
+                datesMap.set(dateStr, []);
+            }
+            datesMap.get(dateStr)!.push(routine);
         });
         setMarkedDates(datesMap);
-    }, [meals]);
+    }, [routines]);
 
-    const hasMeal = (date: Date): boolean => {
+    const hasRoutines = (date: Date): boolean => {
         const dateStr = format(date, "yyyy-MM-dd");
         return markedDates.has(dateStr);
+    };
+
+    const getRoutinesForDate = (date: Date): Routine[] => {
+        const dateStr = format(date, "yyyy-MM-dd");
+        return markedDates.get(dateStr) || [];
     };
 
     const monthStart = startOfMonth(currentMonth);
@@ -69,37 +88,37 @@ export default function MealsCalendar({
 
     return (
         <div className="w-full h-full flex flex-col">
-            <Card className="bg-white border border-neutral-200 shadow-lg h-full flex flex-col">
-                <CardContent className="p-4 sm:p-6 flex-1 flex flex-col">
-                    {/* Header amb navegació */}
-                    <div className="flex items-center justify-between mb-6">
+            <Card className="flex-1 flex flex-col border-neutral-200 shadow-sm">
+                <CardContent className="flex-1 flex flex-col p-4 sm:p-6">
+                    {/* Header del calendari */}
+                    <div className="flex items-center justify-between mb-4">
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
                             onClick={handlePreviousMonth}
-                            className="h-9 w-9 rounded-md border border-neutral-300 hover:bg-neutral-100"
+                            className="h-8 w-8 text-neutral-600 hover:text-neutral-900"
                         >
-                            <ChevronLeft className="h-4 w-4" />
+                            <ChevronLeft className="h-5 w-5" />
                         </Button>
                         <h2 className="text-lg sm:text-xl font-semibold text-neutral-900">
-                            {format(currentMonth, "LLLL yyyy", { locale: ca })}
+                            {format(currentMonth, "MMMM yyyy", { locale: ca })}
                         </h2>
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
                             onClick={handleNextMonth}
-                            className="h-9 w-9 rounded-md border border-neutral-300 hover:bg-neutral-100"
+                            className="h-8 w-8 text-neutral-600 hover:text-neutral-900"
                         >
-                            <ChevronRight className="h-4 w-4" />
+                            <ChevronRight className="h-5 w-5" />
                         </Button>
                     </div>
 
                     {/* Dies de la setmana */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
-                        {weekDays.map((day) => (
+                        {weekDays.map((day, index) => (
                             <div
-                                key={day}
-                                className="text-center text-xs sm:text-sm font-semibold text-neutral-600 uppercase py-2"
+                                key={index}
+                                className="text-center text-xs sm:text-sm font-medium text-neutral-600 py-1"
                             >
                                 {day}
                             </div>
@@ -112,7 +131,8 @@ export default function MealsCalendar({
                             const isCurrentMonth = isSameMonth(date, currentMonth);
                             const isSelectedDate = isSelected(date);
                             const isTodayDate = isToday(date);
-                            const hasMealRecord = hasMeal(date);
+                            const hasRoutineRecord = hasRoutines(date);
+                            const routinesForDate = getRoutinesForDate(date);
 
                             return (
                                 <button
@@ -134,8 +154,16 @@ export default function MealsCalendar({
                                     <span className="text-sm sm:text-base font-medium">
                                         {format(date, "d")}
                                     </span>
-                                    {hasMealRecord && (
-                                        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-orange-500" />
+                                    {hasRoutineRecord && (
+                                        <div className="flex flex-wrap gap-0.5 justify-center mt-0.5">
+                                            {routinesForDate.map((routine, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`w-1.5 h-1.5 rounded-full ${getRoutineTypeColor(routine.routine_type)}`}
+                                                    title={routine.routine_type}
+                                                />
+                                            ))}
+                                        </div>
                                     )}
                                 </button>
                             );

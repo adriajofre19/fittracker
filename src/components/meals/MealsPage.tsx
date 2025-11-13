@@ -11,7 +11,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 export default function MealsPage() {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -20,6 +20,16 @@ export default function MealsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRecord, setEditingRecord] = useState<Meal | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         loadMeals();
@@ -189,24 +199,51 @@ export default function MealsPage() {
                 </div>
             </div>
 
-            {/* Modal per crear/editar */}
-            <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
-                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="text-neutral-900">
+            {/* Modal per crear/editar - Només tablet i escriptori */}
+            {!isMobile && (
+                <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
+                    <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle className="text-neutral-900">
+                                {editingRecord ? "Editar registre d'àpats" : "Afegir registre d'àpats"}
+                            </DialogTitle>
+                        </DialogHeader>
+                        {selectedDate && (
+                            <MealsForm
+                                date={selectedDate}
+                                existingRecord={editingRecord}
+                                onSave={handleSave}
+                                onDelete={editingRecord ? handleDelete : undefined}
+                            />
+                        )}
+                    </DialogContent>
+                </Dialog>
+            )}
+
+            {/* Formulari normal per mòbil - Sense modal */}
+            {isMobile && isModalOpen && selectedDate && (
+                <div className="mt-6 bg-white border border-neutral-200 rounded-lg shadow-sm p-4 sm:p-6">
+                    <div className="mb-4 pb-4 border-b border-neutral-200 flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-neutral-900">
                             {editingRecord ? "Editar registre d'àpats" : "Afegir registre d'àpats"}
-                        </DialogTitle>
-                    </DialogHeader>
-                    {selectedDate && (
-                        <MealsForm
-                            date={selectedDate}
-                            existingRecord={editingRecord}
-                            onSave={handleSave}
-                            onDelete={editingRecord ? handleDelete : undefined}
-                        />
-                    )}
-                </DialogContent>
-            </Dialog>
+                        </h2>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleCloseModal}
+                            className="h-8 w-8 text-neutral-500 hover:text-neutral-900"
+                        >
+                            <X className="h-5 w-5" />
+                        </Button>
+                    </div>
+                    <MealsForm
+                        date={selectedDate}
+                        existingRecord={editingRecord}
+                        onSave={handleSave}
+                        onDelete={editingRecord ? handleDelete : undefined}
+                    />
+                </div>
+            )}
         </div>
     );
 }

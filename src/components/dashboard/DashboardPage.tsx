@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import DashboardCalendar from "./DashboardCalendar";
 import DaySummary from "./DaySummary";
-import type { SleepRecord, Meal } from "../../types";
+import type { SleepRecord, Meal, Routine } from "../../types";
 import { format } from "date-fns";
 
 export default function DashboardPage() {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     const [sleepRecords, setSleepRecords] = useState<SleepRecord[]>([]);
     const [meals, setMeals] = useState<Meal[]>([]);
+    const [routines, setRoutines] = useState<Routine[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -17,9 +18,10 @@ export default function DashboardPage() {
     const loadData = async () => {
         try {
             setIsLoading(true);
-            const [sleepResponse, mealsResponse] = await Promise.all([
+            const [sleepResponse, mealsResponse, routinesResponse] = await Promise.all([
                 fetch("/api/sleep?limit=365"),
                 fetch("/api/meals?limit=365"),
+                fetch("/api/routines?limit=365"),
             ]);
 
             if (sleepResponse.ok) {
@@ -30,6 +32,11 @@ export default function DashboardPage() {
             if (mealsResponse.ok) {
                 const mealsResult = await mealsResponse.json();
                 setMeals(mealsResult.data || []);
+            }
+
+            if (routinesResponse.ok) {
+                const routinesResult = await routinesResponse.json();
+                setRoutines(routinesResult.data || []);
             }
         } catch (error) {
             console.error("Error loading data:", error);
@@ -48,6 +55,12 @@ export default function DashboardPage() {
         if (!selectedDate) return null;
         const dateStr = format(selectedDate, "yyyy-MM-dd");
         return meals.find((m) => m.meal_date === dateStr) || null;
+    };
+
+    const getSelectedRoutines = () => {
+        if (!selectedDate) return [];
+        const dateStr = format(selectedDate, "yyyy-MM-dd");
+        return routines.filter((r) => r.routine_date === dateStr);
     };
 
     if (isLoading) {
@@ -77,6 +90,7 @@ export default function DashboardPage() {
                         onDateSelect={setSelectedDate}
                         sleepRecords={sleepRecords}
                         meals={meals}
+                        routines={routines}
                     />
                 </div>
 
@@ -87,6 +101,7 @@ export default function DashboardPage() {
                             date={selectedDate}
                             sleepRecord={getSelectedSleepRecord()}
                             mealRecord={getSelectedMealRecord()}
+                            routines={getSelectedRoutines()}
                         />
                     ) : (
                         <div className="h-full flex items-center justify-center text-center py-12 sm:py-16 bg-white border border-neutral-200 rounded-lg shadow-sm">

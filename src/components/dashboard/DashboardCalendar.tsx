@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import type { SleepRecord, Meal } from "../../types";
+import type { SleepRecord, Meal, Routine } from "../../types";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, getDay } from "date-fns";
 import { ca } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,6 +11,7 @@ interface DashboardCalendarProps {
     onDateSelect: (date: Date | undefined) => void;
     sleepRecords: SleepRecord[];
     meals: Meal[];
+    routines: Routine[];
 }
 
 const weekDays = ["DL", "DT", "DM", "DJ", "DV", "DS", "DG"];
@@ -20,10 +21,12 @@ export default function DashboardCalendar({
     onDateSelect,
     sleepRecords,
     meals,
+    routines,
 }: DashboardCalendarProps) {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [markedSleepDates, setMarkedSleepDates] = useState<Map<string, SleepRecord>>(new Map());
     const [markedMealDates, setMarkedMealDates] = useState<Map<string, Meal>>(new Map());
+    const [markedRoutineDates, setMarkedRoutineDates] = useState<Map<string, Routine[]>>(new Map());
 
     useEffect(() => {
         const sleepMap = new Map<string, SleepRecord>();
@@ -37,7 +40,17 @@ export default function DashboardCalendar({
             mealMap.set(meal.meal_date, meal);
         });
         setMarkedMealDates(mealMap);
-    }, [sleepRecords, meals]);
+
+        const routineMap = new Map<string, Routine[]>();
+        routines.forEach((routine) => {
+            const dateStr = routine.routine_date;
+            if (!routineMap.has(dateStr)) {
+                routineMap.set(dateStr, []);
+            }
+            routineMap.get(dateStr)!.push(routine);
+        });
+        setMarkedRoutineDates(routineMap);
+    }, [sleepRecords, meals, routines]);
 
     const getSleepQualityColor = (hours: number): string => {
         if (hours >= 8) return "bg-green-500";
@@ -49,9 +62,12 @@ export default function DashboardCalendar({
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
     const startDate = new Date(monthStart);
-    startDate.setDate(startDate.getDate() - getDay(startDate) || 7);
+    // Ajustar al dilluns: getDay() retorna 0=diumenge, 1=dilluns, etc.
+    // Si és diumenge (0), retrocedir 6 dies; si és dilluns (1), retrocedir 0 dies, etc.
+    startDate.setDate(startDate.getDate() - ((getDay(startDate) + 6) % 7));
     const endDate = new Date(monthEnd);
-    endDate.setDate(endDate.getDate() + (7 - getDay(endDate)) % 7);
+    // Ajustar al diumenge: si acaba en diumenge (0), avançar 0 dies; si acaba en dilluns (1), avançar 6 dies, etc.
+    endDate.setDate(endDate.getDate() + (6 - getDay(endDate)) % 7);
     
     const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 
@@ -123,6 +139,7 @@ export default function DashboardCalendar({
                             const dateStr = format(date, "yyyy-MM-dd");
                             const sleepRecord = markedSleepDates.get(dateStr);
                             const mealRecord = markedMealDates.get(dateStr);
+                            const dayRoutines = markedRoutineDates.get(dateStr) || [];
 
                             return (
                                 <button
@@ -144,12 +161,31 @@ export default function DashboardCalendar({
                                     <span className="text-sm sm:text-base font-medium">
                                         {format(date, "d")}
                                     </span>
-                                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5 flex-wrap justify-center max-w-full">
                                         {sleepRecord && (
-                                            <span className={`w-1.5 h-1.5 rounded-full ${getSleepQualityColor(sleepRecord.total_sleep_hours)}`}></span>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${getSleepQualityColor(sleepRecord.total_sleep_hours)}`} title={`Son: ${sleepRecord.total_sleep_hours}h`}></span>
                                         )}
                                         {mealRecord && (
-                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500" title="Àpats registrats"></span>
+                                        )}
+                                        {dayRoutines.length > 0 && (
+                                            <>
+                                                {dayRoutines.slice(0, 3).map((routine, idx) => {
+                                                    const colors: Record<string, string> = {
+                                                        athletics: "bg-blue-500",
+                                                        running: "bg-green-500",
+                                                        gym: "bg-purple-500",
+                                                        steps: "bg-orange-500",
+                                                    };
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            className={`w-1.5 h-1.5 rounded-full ${colors[routine.routine_type] || "bg-neutral-400"}`}
+                                                            title={`Rutina: ${routine.routine_type}`}
+                                                        />
+                                                    );
+                                                })}
+                                            </>
                                         )}
                                     </div>
                                 </button>
