@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider as Provider,
             options: {
-                redirectTo: "https://fittracker-ruby.vercel.app/api/auth/signin"
+                redirectTo: "https://fittracker-ruby.vercel.app/api/auth/callback"
             },
         });
 
