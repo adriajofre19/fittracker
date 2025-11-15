@@ -4,7 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import RoutineTemplateForm from "./RoutineTemplateForm";
 import type { RoutineTemplate, RoutineType } from "../../types";
-import { Plus, X, Edit, Trash2, Star, Activity, Zap, Dumbbell, Footprints, Circle, Target, Calendar } from "lucide-react";
+import { Plus, X, Edit, Trash2, Star, Activity, Zap, Dumbbell, Footprints, Circle, Target, Calendar, Sparkles, Loader2 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 const routineTypeLabels = {
     athletics: "Atletisme",
@@ -41,6 +48,11 @@ export default function RoutineTemplatesPage() {
     const [selectedTemplateType, setSelectedTemplateType] = useState<RoutineType>("gym");
     const [filterType, setFilterType] = useState<RoutineType | "all">("all");
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+    const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [userGoals, setUserGoals] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedTemplate, setGeneratedTemplate] = useState<Partial<RoutineTemplate> | null>(null);
 
     useEffect(() => {
         loadTemplates();
@@ -126,6 +138,46 @@ export default function RoutineTemplatesPage() {
         setEditingTemplate(null);
         setSelectedTemplateType(type);
         setIsFormOpen(true);
+    };
+
+    const handleGenerateWithAI = async () => {
+        if (!aiPrompt.trim()) {
+            alert("Si us plau, escriu una descripció de la rutina que vols crear");
+            return;
+        }
+
+        setIsGenerating(true);
+        try {
+            const response = await fetch("/api/routine-templates/generate-with-ai", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt: aiPrompt,
+                    userGoals: userGoals || undefined,
+                }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setGeneratedTemplate(result.data);
+                setIsAIDialogOpen(false);
+                setSelectedTemplateType(result.data.routine_type || "gym");
+                setEditingTemplate(null);
+                setIsFormOpen(true);
+                setAiPrompt("");
+                setUserGoals("");
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.error}`);
+            }
+        } catch (error) {
+            console.error("Error generating template with AI:", error);
+            alert("Error al generar la rutina amb IA");
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     const handleOpenEditForm = (template: RoutineTemplate) => {
@@ -245,21 +297,98 @@ export default function RoutineTemplatesPage() {
             </div>
 
             {/* Botons per crear noves plantilles */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                {routineTypeOptions.map((option) => {
-                    const Icon = option.icon;
-                    return (
+            <div className="space-y-3">
+                <Dialog open={isAIDialogOpen} onOpenChange={setIsAIDialogOpen}>
+                    <DialogTrigger asChild>
                         <Button
-                            key={option.type}
-                            onClick={() => handleOpenCreateForm(option.type)}
-                            className={`${option.color} text-white hover:opacity-90 gap-2`}
-                            variant="default"
+                            variant="outline"
+                            className="w-full gap-2 border-purple-300 text-purple-700 hover:bg-purple-50 text-base py-6"
                         >
-                            <Icon className="h-4 w-4" />
-                            {option.label}
+                            <Sparkles className="h-5 w-5" />
+                            Crear rutina amb IA
                         </Button>
-                    );
-                })}
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>Crear rutina amb Intel·ligència Artificial</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 mt-4">
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                    Descriu la rutina que vols crear *
+                                </label>
+                                <textarea
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    placeholder="Exemple: Vull una rutina de gimnàs per treballar tren superior, amb 4 exercicis, 3 sèries de 10 repeticions cadascun. Vull treballar pit, espatlles i braços."
+                                    rows={6}
+                                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md resize-none"
+                                />
+                                <p className="text-xs text-neutral-500 mt-1">
+                                    Sigues específic: tipus de rutina, exercicis, sèries, repeticions, pes, etc.
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                    Els teus objectius (opcional)
+                                </label>
+                                <textarea
+                                    value={userGoals}
+                                    onChange={(e) => setUserGoals(e.target.value)}
+                                    placeholder="Exemple: Augmentar la força, perdre pes, millorar la resistència..."
+                                    rows={3}
+                                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md resize-none"
+                                />
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                                <Button
+                                    onClick={handleGenerateWithAI}
+                                    disabled={isGenerating || !aiPrompt.trim()}
+                                    className="flex-1 bg-purple-600 text-white hover:bg-purple-700"
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                            Generant...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Sparkles className="h-4 w-4 mr-2" />
+                                            Generar rutina
+                                        </>
+                                    )}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setIsAIDialogOpen(false);
+                                        setAiPrompt("");
+                                        setUserGoals("");
+                                    }}
+                                >
+                                    Cancel·lar
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                    {routineTypeOptions.map((option) => {
+                        const Icon = option.icon;
+                        return (
+                            <Button
+                                key={option.type}
+                                onClick={() => handleOpenCreateForm(option.type)}
+                                className={`${option.color} text-white hover:opacity-90 gap-2`}
+                                variant="default"
+                            >
+                                <Icon className="h-4 w-4" />
+                                {option.label}
+                            </Button>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Llista de plantilles */}
@@ -337,11 +466,20 @@ export default function RoutineTemplatesPage() {
             {isFormOpen && (
                 <div className="mt-6 bg-white border border-neutral-200 rounded-lg shadow-sm p-4 sm:p-6">
                     <div className="mb-4 pb-4 border-b border-neutral-200 flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-neutral-900">
-                            {editingTemplate
-                                ? `Editar plantilla: ${editingTemplate.name}`
-                                : `Crear nova plantilla de ${routineTypeOptions.find((o) => o.type === selectedTemplateType)?.label}`}
-                        </h2>
+                        <div>
+                            <h2 className="text-xl font-semibold text-neutral-900">
+                                {editingTemplate
+                                    ? `Editar plantilla: ${editingTemplate.name}`
+                                    : generatedTemplate
+                                        ? `Rutina generada amb IA: ${generatedTemplate.name || "Nova rutina"}`
+                                        : `Crear nova plantilla de ${routineTypeOptions.find((o) => o.type === selectedTemplateType)?.label}`}
+                            </h2>
+                            {generatedTemplate && (
+                                <p className="text-sm text-neutral-500 mt-1">
+                                    Revisa i ajusta la rutina generada abans de guardar-la
+                                </p>
+                            )}
+                        </div>
                         <Button
                             variant="ghost"
                             size="icon"
@@ -353,10 +491,16 @@ export default function RoutineTemplatesPage() {
                     </div>
                     <RoutineTemplateForm
                         templateType={selectedTemplateType}
-                        existingTemplate={editingTemplate}
-                        onSave={handleSave}
+                        existingTemplate={editingTemplate || (generatedTemplate as RoutineTemplate | null)}
+                        onSave={async (templateData) => {
+                            await handleSave(templateData);
+                            setGeneratedTemplate(null);
+                        }}
                         onDelete={editingTemplate ? handleDelete : undefined}
-                        onCancel={handleCloseForm}
+                        onCancel={() => {
+                            handleCloseForm();
+                            setGeneratedTemplate(null);
+                        }}
                     />
                 </div>
             )}
