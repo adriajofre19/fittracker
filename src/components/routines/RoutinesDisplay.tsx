@@ -84,65 +84,65 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                 const summary = getRoutineSummary(routine);
 
                 return (
-                    <Card key={routine.id} className="border-neutral-200 shadow-sm">
+                    <Card key={routine.id} className="border-neutral-200 dark:border-neutral-800 shadow-sm">
                         <CardContent className="p-3 sm:p-4">
                             <div className="flex items-center justify-between">
                                 <button
                                     onClick={() => toggleRoutine(routine.id)}
                                     className="flex items-center gap-3 flex-1 text-left hover:opacity-80 transition-opacity"
                                 >
-                                    <div className="p-1.5 rounded-lg bg-neutral-100">
-                                        <Icon className="h-4 w-4 text-neutral-700" />
+                                    <div className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                                        <Icon className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <h3 className="text-sm sm:text-base font-semibold text-neutral-900">
+                                            <h3 className="text-sm sm:text-base font-semibold text-neutral-900 dark:text-neutral-100">
                                                 {routineTypeLabels[routine.routine_type]}
                                             </h3>
                                             {summary && (
-                                                <span className="text-xs text-neutral-500 hidden sm:inline">
+                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 hidden sm:inline">
                                                     • {summary}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-xs text-neutral-500">
+                                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
                                             {format(new Date(routine.routine_date), "dd/MM/yyyy")}
                                         </p>
                                     </div>
                                     {isExpanded ? (
-                                        <ChevronUp className="h-4 w-4 text-neutral-500 flex-shrink-0" />
+                                        <ChevronUp className="h-4 w-4 text-neutral-500 dark:text-neutral-400 flex-shrink-0" />
                                     ) : (
-                                        <ChevronDown className="h-4 w-4 text-neutral-500 flex-shrink-0" />
+                                        <ChevronDown className="h-4 w-4 text-neutral-500 dark:text-neutral-400 flex-shrink-0" />
                                     )}
                                 </button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => onEdit(routine)}
-                                    className="h-7 w-7 text-neutral-600 hover:text-neutral-900 ml-2"
+                                    className="h-7 w-7 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 ml-2"
                                 >
                                     <Edit className="h-3.5 w-3.5" />
                                 </Button>
                             </div>
 
                             {isExpanded && (
-                                <div className="mt-3 pt-3 border-t border-neutral-200">
+                                <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800">
                                     {/* Contingut segons el tipus */}
                                     {routine.routine_type === "athletics" && routine.athletics_data && (
                                         <div className="space-y-2">
                                             <div className="text-xs sm:text-sm font-medium text-neutral-700">Sèries:</div>
                                             {routine.athletics_data.series?.map((serie, idx) => (
-                                                <div key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600">
+                                                <div key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                                                     <Badge variant="outline" className="text-xs">
                                                         {serie.distance}
                                                     </Badge>
                                                     <span>{serie.time}</span>
-                                                    <span className="text-neutral-400">•</span>
+                                                    <span className="text-neutral-400 dark:text-neutral-600">•</span>
                                                     <span>Descans: {serie.rest}</span>
                                                 </div>
                                             ))}
                                             {routine.athletics_data.total_distance && (
-                                                <div className="text-xs sm:text-sm text-neutral-600 mt-2">
+                                                <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-2">
                                                     Distància total: {routine.athletics_data.total_distance}
                                                 </div>
                                             )}
@@ -153,8 +153,8 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                         <div className="space-y-2">
                                             <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
                                                 <div>
-                                                    <span className="text-neutral-500">Distància:</span>
-                                                    <span className="ml-2 font-medium text-neutral-900">
+                                                    <span className="text-neutral-500 dark:text-neutral-400">Distància:</span>
+                                                    <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">
                                                         {routine.running_data.distance_km} km
                                                     </span>
                                                 </div>
@@ -185,13 +185,13 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                     {routine.routine_type === "gym" && routine.gym_data && (
                                         <div className="space-y-2 sm:space-y-3">
                                             {routine.gym_data.exercises?.map((exercise, idx) => (
-                                                <div key={idx} className="border-l-2 border-neutral-200 pl-2 sm:pl-3">
-                                                    <div className="font-medium text-neutral-900 text-xs sm:text-sm mb-1">
+                                                <div key={idx} className="border-l-2 border-neutral-200 dark:border-neutral-800 pl-2 sm:pl-3">
+                                                    <div className="font-medium text-neutral-900 dark:text-neutral-100 text-xs sm:text-sm mb-1">
                                                         {exercise.exercise_name || `Exercici ${idx + 1}`}
                                                     </div>
                                                     <div className="space-y-0.5 sm:space-y-1">
                                                         {exercise.sets?.map((set, setIdx) => (
-                                                            <div key={setIdx} className="text-xs text-neutral-600">
+                                                            <div key={setIdx} className="text-xs text-neutral-600 dark:text-neutral-400">
                                                                 Sèrie {setIdx + 1}: {set.reps} reps
                                                                 {set.weight_kg && ` × ${set.weight_kg} kg`}
                                                                 {set.rest_seconds && ` (Descans: ${set.rest_seconds}s)`}
@@ -201,7 +201,7 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                                 </div>
                                             ))}
                                             {routine.gym_data.total_duration_minutes && (
-                                                <div className="text-xs sm:text-sm text-neutral-600 mt-2">
+                                                <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-2">
                                                     Durada total: {routine.gym_data.total_duration_minutes} min
                                                 </div>
                                             )}
@@ -209,7 +209,7 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                     )}
 
                                     {routine.routine_type === "steps" && routine.steps_count !== undefined && (
-                                        <div className="text-lg sm:text-xl font-bold text-neutral-900">
+                                        <div className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
                                             {routine.steps_count.toLocaleString()} passos
                                         </div>
                                     )}
@@ -237,14 +237,14 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                         <div className="space-y-2">
                                             <div className="text-xs sm:text-sm font-medium text-neutral-700">Sèries:</div>
                                             {routine.yoyo_test_data.series?.map((serie, idx) => (
-                                                <div key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600">
+                                                <div key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                                                     <Badge variant={serie.completed ? "default" : "outline"} className="text-xs">
                                                         Del {serie.start_level} al {serie.end_level}
                                                     </Badge>
                                                     {serie.completed ? (
-                                                        <span className="text-green-600">✓ Completada</span>
+                                                        <span className="text-green-600 dark:text-green-400">✓ Completada</span>
                                                     ) : (
-                                                        <span className="text-neutral-400">No completada</span>
+                                                        <span className="text-neutral-400 dark:text-neutral-600">No completada</span>
                                                     )}
                                                 </div>
                                             ))}
@@ -252,8 +252,8 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                     )}
 
                                     {routine.notes && (
-                                        <div className="mt-3 pt-3 border-t border-neutral-200">
-                                            <p className="text-xs sm:text-sm text-neutral-600">{routine.notes}</p>
+                                        <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                                            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">{routine.notes}</p>
                                         </div>
                                     )}
                                 </div>

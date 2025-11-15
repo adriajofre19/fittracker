@@ -25,7 +25,7 @@ const { title = "Astro Basics", hideNavbar = false } = Astro.props;
 		/>
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class="bg-white dark:bg-neutral-950 min-h-screen">
 		{!hideNavbar && <Navbar client:load />}
 		<slot />
 	</body>

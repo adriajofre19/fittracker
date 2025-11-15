@@ -248,7 +248,7 @@ export default function RoutineTemplatesPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-neutral-600">Carregant...</div>
+                <div className="text-neutral-600 dark:text-neutral-400">Carregant...</div>
             </div>
         );
     }
@@ -256,10 +256,10 @@ export default function RoutineTemplatesPage() {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
             <div className="text-center sm:text-left space-y-2">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
                     Rutines Plantilla
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400">
                     Crea i gestiona rutines plantilla que pots assignar a qualsevol dia
                 </p>
             </div>
@@ -267,11 +267,11 @@ export default function RoutineTemplatesPage() {
             {/* Filtres */}
             <div className="flex flex-wrap gap-3 items-center">
                 <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-neutral-700">Filtrar per tipus:</label>
+                    <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Filtrar per tipus:</label>
                     <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value as RoutineType | "all")}
-                        className="px-3 py-1.5 bg-white border border-neutral-300 rounded-md text-sm"
+                        className="px-3 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-sm text-neutral-900 dark:text-neutral-100"
                     >
                         <option value="all">Tots</option>
                         {routineTypeOptions.map((option) => (
@@ -289,7 +289,7 @@ export default function RoutineTemplatesPage() {
                         onChange={(e) => setShowFavoritesOnly(e.target.checked)}
                         className="w-4 h-4"
                     />
-                    <label htmlFor="favoritesOnly" className="text-sm text-neutral-700 cursor-pointer flex items-center gap-1">
+                    <label htmlFor="favoritesOnly" className="text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer flex items-center gap-1">
                         <Star className="h-4 w-4" />
                         Només favorites
                     </label>
@@ -302,7 +302,7 @@ export default function RoutineTemplatesPage() {
                     <DialogTrigger asChild>
                         <Button
                             variant="outline"
-                            className="w-full gap-2 border-purple-300 text-purple-700 hover:bg-purple-50 text-base py-6"
+                            className="w-full gap-2 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950 text-base py-6"
                         >
                             <Sparkles className="h-5 w-5" />
                             Crear rutina amb IA
@@ -310,11 +310,11 @@ export default function RoutineTemplatesPage() {
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <DialogTitle>Crear rutina amb Intel·ligència Artificial</DialogTitle>
+                            <DialogTitle className="text-neutral-900 dark:text-neutral-100">Crear rutina amb Intel·ligència Artificial</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
                             <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                                     Descriu la rutina que vols crear *
                                 </label>
                                 <textarea
@@ -322,14 +322,14 @@ export default function RoutineTemplatesPage() {
                                     onChange={(e) => setAiPrompt(e.target.value)}
                                     placeholder="Exemple: Vull una rutina de gimnàs per treballar tren superior, amb 4 exercicis, 3 sèries de 10 repeticions cadascun. Vull treballar pit, espatlles i braços."
                                     rows={6}
-                                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md resize-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 resize-none"
                                 />
-                                <p className="text-xs text-neutral-500 mt-1">
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                                     Sigues específic: tipus de rutina, exercicis, sèries, repeticions, pes, etc.
                                 </p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                                     Els teus objectius (opcional)
                                 </label>
                                 <textarea
@@ -337,14 +337,14 @@ export default function RoutineTemplatesPage() {
                                     onChange={(e) => setUserGoals(e.target.value)}
                                     placeholder="Exemple: Augmentar la força, perdre pes, millorar la resistència..."
                                     rows={3}
-                                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md resize-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 resize-none"
                                 />
                             </div>
                             <div className="flex gap-2 pt-2">
                                 <Button
                                     onClick={handleGenerateWithAI}
                                     disabled={isGenerating || !aiPrompt.trim()}
-                                    className="flex-1 bg-purple-600 text-white hover:bg-purple-700"
+                                    className="flex-1 bg-purple-600 dark:bg-purple-700 text-white hover:bg-purple-700 dark:hover:bg-purple-800"
                                 >
                                     {isGenerating ? (
                                         <>
@@ -393,9 +393,9 @@ export default function RoutineTemplatesPage() {
 
             {/* Llista de plantilles */}
             {templates.length === 0 ? (
-                <div className="text-center py-12 bg-white border border-neutral-200 rounded-lg">
-                    <p className="text-neutral-500 mb-4">No hi ha plantilles creades</p>
-                    <p className="text-sm text-neutral-400">Utilitza els botons de dalt per crear una nova plantilla</p>
+                <div className="text-center py-12 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                    <p className="text-neutral-500 dark:text-neutral-400 mb-4">No hi ha plantilles creades</p>
+                    <p className="text-sm text-neutral-400 dark:text-neutral-500">Utilitza els botons de dalt per crear una nova plantilla</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -403,19 +403,19 @@ export default function RoutineTemplatesPage() {
                         const Icon = routineTypeIcons[template.routine_type];
                         const summary = getTemplateSummary(template);
                         return (
-                            <Card key={template.id} className="border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+                            <Card key={template.id} className="border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
                                 <CardContent className="p-4">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex items-center gap-2 flex-1">
-                                            <div className="p-1.5 rounded-lg bg-neutral-100">
-                                                <Icon className="h-4 w-4 text-neutral-700" />
+                                    <div className="flex items-start justify-between mb-2 gap-2">
+                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                            <div className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex-shrink-0">
+                                                <Icon className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-neutral-900 text-sm sm:text-base truncate">
+                                            <div className="flex-1 min-w-0 overflow-hidden">
+                                                <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm sm:text-base truncate w-full">
                                                     {template.name}
                                                 </h3>
                                                 {template.description && (
-                                                    <p className="text-xs text-neutral-500 truncate">{template.description}</p>
+                                                    <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate w-full mt-1">{template.description}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -428,12 +428,12 @@ export default function RoutineTemplatesPage() {
                                             <Star className={`h-4 w-4 ${template.is_favorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
                                         </Button>
                                     </div>
-                                    <div className="flex items-center gap-2 mb-3">
+                                    <div className="flex items-center gap-2 mb-3 flex-wrap">
                                         <Badge className={routineTypeColors[template.routine_type]}>
                                             {routineTypeLabels[template.routine_type]}
                                         </Badge>
                                         {summary && (
-                                            <span className="text-xs text-neutral-500">{summary}</span>
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate flex-1 min-w-0">{summary}</span>
                                         )}
                                     </div>
                                     <div className="flex gap-2">
@@ -450,7 +450,7 @@ export default function RoutineTemplatesPage() {
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleDelete(template.id)}
-                                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
                                         >
                                             <Trash2 className="h-3.5 w-3.5" />
                                         </Button>
@@ -464,10 +464,10 @@ export default function RoutineTemplatesPage() {
 
             {/* Formulari */}
             {isFormOpen && (
-                <div className="mt-6 bg-white border border-neutral-200 rounded-lg shadow-sm p-4 sm:p-6">
-                    <div className="mb-4 pb-4 border-b border-neutral-200 flex items-center justify-between">
+                <div className="mt-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-4 sm:p-6">
+                    <div className="mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-semibold text-neutral-900">
+                            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                                 {editingTemplate
                                     ? `Editar plantilla: ${editingTemplate.name}`
                                     : generatedTemplate
@@ -475,7 +475,7 @@ export default function RoutineTemplatesPage() {
                                         : `Crear nova plantilla de ${routineTypeOptions.find((o) => o.type === selectedTemplateType)?.label}`}
                             </h2>
                             {generatedTemplate && (
-                                <p className="text-sm text-neutral-500 mt-1">
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                                     Revisa i ajusta la rutina generada abans de guardar-la
                                 </p>
                             )}
@@ -484,7 +484,7 @@ export default function RoutineTemplatesPage() {
                             variant="ghost"
                             size="icon"
                             onClick={handleCloseForm}
-                            className="h-8 w-8 text-neutral-500 hover:text-neutral-900"
+                            className="h-8 w-8 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
                         >
                             <X className="h-5 w-5" />
                         </Button>

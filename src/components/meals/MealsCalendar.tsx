@@ -44,7 +44,7 @@ export default function MealsCalendar({
     const endDate = new Date(monthEnd);
     // Ajustar al diumenge: si acaba en diumenge (0), avançar 0 dies; si acaba en dilluns (1), avançar 6 dies, etc.
     endDate.setDate(endDate.getDate() + (6 - getDay(endDate)) % 7);
-    
+
     const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 
     const handlePreviousMonth = () => {
@@ -69,7 +69,7 @@ export default function MealsCalendar({
 
     return (
         <div className="w-full h-full flex flex-col">
-            <Card className="bg-white border border-neutral-200 shadow-lg h-full flex flex-col">
+            <Card className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg h-full flex flex-col">
                 <CardContent className="p-4 sm:p-6 flex-1 flex flex-col">
                     {/* Header amb navegació */}
                     <div className="flex items-center justify-between mb-6">
@@ -77,18 +77,18 @@ export default function MealsCalendar({
                             variant="outline"
                             size="icon"
                             onClick={handlePreviousMonth}
-                            className="h-9 w-9 rounded-md border border-neutral-300 hover:bg-neutral-100"
+                            className="h-9 w-9 rounded-md border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <h2 className="text-lg sm:text-xl font-semibold text-neutral-900">
+                        <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                             {format(currentMonth, "LLLL yyyy", { locale: ca })}
                         </h2>
                         <Button
                             variant="outline"
                             size="icon"
                             onClick={handleNextMonth}
-                            className="h-9 w-9 rounded-md border border-neutral-300 hover:bg-neutral-100"
+                            className="h-9 w-9 rounded-md border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                         >
                             <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -99,7 +99,7 @@ export default function MealsCalendar({
                         {weekDays.map((day) => (
                             <div
                                 key={day}
-                                className="text-center text-xs sm:text-sm font-semibold text-neutral-600 uppercase py-2"
+                                className="text-center text-xs sm:text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase py-2"
                             >
                                 {day}
                             </div>
@@ -122,12 +122,12 @@ export default function MealsCalendar({
                                         relative flex flex-col items-center justify-center
                                         aspect-square min-h-[3rem] sm:min-h-[4rem]
                                         rounded-md transition-all
-                                        ${!isCurrentMonth ? "text-neutral-300" : "text-neutral-900"}
-                                        ${isSelectedDate 
-                                            ? "bg-neutral-900 text-white font-semibold shadow-md" 
-                                            : isTodayDate 
-                                                ? "bg-neutral-100 text-neutral-900 font-bold border-2 border-neutral-400"
-                                                : "hover:bg-neutral-50"
+                                        ${!isCurrentMonth ? "text-neutral-300 dark:text-neutral-700" : "text-neutral-900 dark:text-neutral-100"}
+                                        ${isSelectedDate
+                                            ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-semibold shadow-md"
+                                            : isTodayDate
+                                                ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 font-bold border-2 border-neutral-400 dark:border-neutral-600"
+                                                : "hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                         }
                                     `}
                                 >

@@ -128,7 +128,7 @@ export default function SleepPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-neutral-600">Carregant...</div>
+                <div className="text-neutral-600 dark:text-neutral-400">Carregant...</div>
             </div>
         );
     }
@@ -136,10 +136,10 @@ export default function SleepPage() {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
             <div className="text-center sm:text-left space-y-2">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
                     Registre de Son
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400">
                     Selecciona un dia al calendari per veure o afegir informació de son
                 </p>
             </div>
@@ -158,27 +158,27 @@ export default function SleepPage() {
                 <div className="flex flex-col h-full">
                     {selectedDate ? (
                         selectedRecord ? (
-                            <SleepDisplay 
-                                record={selectedRecord} 
+                            <SleepDisplay
+                                record={selectedRecord}
                                 onEdit={() => handleOpenEditModal(selectedRecord)}
                             />
                         ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-center py-12 sm:py-16 bg-white border border-neutral-200 rounded-lg shadow-sm">
+                            <div className="h-full flex flex-col items-center justify-center text-center py-12 sm:py-16 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm">
                                 <div className="space-y-4 px-4">
-                                    <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center">
-                                        <Plus className="h-8 w-8 text-blue-600" />
+                                    <div className="w-16 h-16 mx-auto bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                        <Plus className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div>
-                                        <p className="text-base sm:text-lg font-medium text-neutral-700 mb-2">
+                                        <p className="text-base sm:text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                                             No hi ha registre per aquest dia
                                         </p>
-                                        <p className="text-sm text-neutral-500 mb-6">
+                                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
                                             Crea un nou registre de son per començar a fer seguiment
                                         </p>
                                     </div>
                                     <Button
                                         onClick={handleOpenCreateModal}
-                                        className="bg-blue-600 text-white hover:bg-blue-700 gap-2 shadow-md hover:shadow-lg transition-shadow"
+                                        className="bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800 gap-2 shadow-md hover:shadow-lg transition-shadow"
                                         size="lg"
                                     >
                                         <Plus className="h-5 w-5" />
@@ -204,7 +204,7 @@ export default function SleepPage() {
                 <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
                     <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
                         <DialogHeader>
-                            <DialogTitle className="text-neutral-900">
+                            <DialogTitle className="text-neutral-900 dark:text-neutral-100">
                                 {editingRecord ? "Editar registre de son" : "Afegir registre de son"}
                             </DialogTitle>
                         </DialogHeader>
@@ -222,16 +222,16 @@ export default function SleepPage() {
 
             {/* Formulari normal per mòbil - Sense modal */}
             {isMobile && isModalOpen && selectedDate && (
-                <div className="mt-6 bg-white border border-neutral-200 rounded-lg shadow-sm p-4 sm:p-6">
-                    <div className="mb-4 pb-4 border-b border-neutral-200 flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-neutral-900">
+                <div className="mt-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-4 sm:p-6">
+                    <div className="mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                             {editingRecord ? "Editar registre de son" : "Afegir registre de son"}
                         </h2>
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={handleCloseModal}
-                            className="h-8 w-8 text-neutral-500 hover:text-neutral-900"
+                            className="h-8 w-8 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
                         >
                             <X className="h-5 w-5" />
                         </Button>

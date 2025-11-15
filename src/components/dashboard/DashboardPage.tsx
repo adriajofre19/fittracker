@@ -66,7 +66,7 @@ export default function DashboardPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-neutral-600">Carregant...</div>
+                <div className="text-neutral-600 dark:text-neutral-400">Carregant...</div>
             </div>
         );
     }
@@ -74,10 +74,10 @@ export default function DashboardPage() {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
             <div className="text-center sm:text-left space-y-2">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
                     Resum Diari
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400">
                     Selecciona un dia al calendari per veure el resum complet
                 </p>
             </div>
@@ -104,9 +104,9 @@ export default function DashboardPage() {
                             routines={getSelectedRoutines()}
                         />
                     ) : (
-                        <div className="h-full flex items-center justify-center text-center py-12 sm:py-16 bg-white border border-neutral-200 rounded-lg shadow-sm">
+                        <div className="h-full flex items-center justify-center text-center py-12 sm:py-16 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm">
                             <div className="px-4">
-                                <p className="text-base sm:text-lg text-neutral-500">
+                                <p className="text-base sm:text-lg text-neutral-500 dark:text-neutral-400">
                                     Selecciona un dia al calendari
                                 </p>
                             </div>

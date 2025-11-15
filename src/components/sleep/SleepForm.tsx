@@ -63,16 +63,16 @@ export default function SleepForm({
         if (existingRecord) {
             const bedtimeDate = new Date(existingRecord.bedtime);
             const wakeTimeDate = new Date(existingRecord.wake_time);
-            
+
             setBedtime(format(bedtimeDate, "yyyy-MM-dd'T'HH:mm"));
             setWakeTime(format(wakeTimeDate, "yyyy-MM-dd'T'HH:mm"));
-            
+
             const { hours, minutes } = decimalToHoursMinutes(existingRecord.total_sleep_hours);
             setTotalHours(hours.toString());
             setTotalMinutes(minutes.toString());
-            
+
             setNotes(existingRecord.notes || "");
-            
+
             // Convertir les fases de son a format d'entrada
             if (existingRecord.sleep_phases && existingRecord.sleep_phases.length > 0) {
                 // Crear un mapa de les fases existents
@@ -85,7 +85,7 @@ export default function SleepForm({
                         minutes: minutes.toString(),
                     });
                 });
-                
+
                 // Omplir les fases per defecte amb les dades existents
                 const convertedPhases = defaultPhases.map((defaultPhase) => {
                     return phasesMap.get(defaultPhase.phase) || defaultPhase;
@@ -113,7 +113,7 @@ export default function SleepForm({
             const sleepDate = format(date, "yyyy-MM-dd");
             const bedtimeISO = new Date(bedtime).toISOString();
             const wakeTimeISO = new Date(wakeTime).toISOString();
-            
+
             // Calcular total de son en decimals
             const totalSleepDecimal = hoursMinutesToDecimal(totalHours, totalMinutes);
 
@@ -146,7 +146,7 @@ export default function SleepForm({
 
     const handleDelete = async () => {
         if (!existingRecord || !onDelete) return;
-        
+
         if (confirm("Estàs segur que vols eliminar aquest registre de son?")) {
             await onDelete(existingRecord.id);
         }
@@ -168,7 +168,7 @@ export default function SleepForm({
                 <div>
                     <label
                         htmlFor="bedtime"
-                        className="block text-sm font-medium text-neutral-700 mb-1.5"
+                        className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
                         Hora d'anar a dormir
                     </label>
@@ -178,13 +178,13 @@ export default function SleepForm({
                         value={bedtime}
                         onChange={(e) => setBedtime(e.target.value)}
                         required
-                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
                 <div>
                     <label
                         htmlFor="wakeTime"
-                        className="block text-sm font-medium text-neutral-700 mb-1.5"
+                        className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
                         Hora de despertar
                     </label>
@@ -194,7 +194,7 @@ export default function SleepForm({
                         value={wakeTime}
                         onChange={(e) => setWakeTime(e.target.value)}
                         required
-                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
             </div>
@@ -205,7 +205,7 @@ export default function SleepForm({
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label htmlFor="totalHours" className="block text-xs text-neutral-500 mb-1">
+                        <label htmlFor="totalHours" className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">
                             Hores
                         </label>
                         <input
@@ -216,11 +216,11 @@ export default function SleepForm({
                             value={totalHours}
                             onChange={(e) => setTotalHours(e.target.value)}
                             required
-                            className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
                     <div>
-                        <label htmlFor="totalMinutes" className="block text-xs text-neutral-500 mb-1">
+                        <label htmlFor="totalMinutes" className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">
                             Minuts
                         </label>
                         <input
@@ -231,7 +231,7 @@ export default function SleepForm({
                             value={totalMinutes}
                             onChange={(e) => setTotalMinutes(e.target.value)}
                             required
-                            className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
                 </div>
@@ -245,16 +245,16 @@ export default function SleepForm({
                     {phases.map((phase) => (
                         <div
                             key={phase.phase}
-                            className="p-2.5 bg-neutral-50 border border-neutral-200 rounded-md"
+                            className="p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-md"
                         >
                             <div className="mb-2">
-                                <span className="text-sm font-medium text-neutral-900">
+                                <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                                     {phaseLabels[phase.phase]}
                                 </span>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label className="block text-xs text-neutral-500 mb-1">
+                                    <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">
                                         Hores
                                     </label>
                                     <input
@@ -265,11 +265,11 @@ export default function SleepForm({
                                         onChange={(e) =>
                                             updatePhase(phase.phase, "hours", e.target.value)
                                         }
-                                        className="w-full px-2 py-1.5 bg-white border border-neutral-300 rounded-md text-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-2 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs text-neutral-500 mb-1">
+                                    <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">
                                         Minuts
                                     </label>
                                     <input
@@ -280,7 +280,7 @@ export default function SleepForm({
                                         onChange={(e) =>
                                             updatePhase(phase.phase, "minutes", e.target.value)
                                         }
-                                        className="w-full px-2 py-1.5 bg-white border border-neutral-300 rounded-md text-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-2 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
                             </div>
@@ -301,7 +301,7 @@ export default function SleepForm({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     placeholder="Afegeix notes sobre el teu son..."
                 />
             </div>
@@ -310,7 +310,7 @@ export default function SleepForm({
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                    className="flex-1 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800"
                 >
                     {isSubmitting ? "Desant..." : existingRecord ? "Actualitzar" : "Guardar"}
                 </Button>
@@ -319,7 +319,7 @@ export default function SleepForm({
                         type="button"
                         variant="destructive"
                         onClick={handleDelete}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800"
                     >
                         Eliminar
                     </Button>

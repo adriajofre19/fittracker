@@ -97,7 +97,7 @@ export default function ProductSelector({ onAddProduct, existingProducts = [], a
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle className="text-neutral-900">
+                        <DialogTitle className="text-neutral-900 dark:text-neutral-100">
                             Seleccionar producte
                         </DialogTitle>
                     </DialogHeader>
@@ -152,11 +152,10 @@ export default function ProductSelector({ onAddProduct, existingProducts = [], a
                                         key={product.id}
                                         type="button"
                                         onClick={() => setSelectedProduct(product)}
-                                        className={`w-full text-left p-3 rounded-md border transition-colors ${
-                                            selectedProduct?.id === product.id
-                                                ? "border-blue-500 bg-blue-50"
-                                                : "border-neutral-200 hover:bg-neutral-50"
-                                        }`}
+                                        className={`w-full text-left p-3 rounded-md border transition-colors ${selectedProduct?.id === product.id
+                                            ? "border-blue-500 dark:border-blue-600 bg-blue-50 dark:bg-blue-950"
+                                            : "border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                            }`}
                                     >
                                         <div className="flex items-center justify-between">
                                             <div>
@@ -205,7 +204,7 @@ export default function ProductSelector({ onAddProduct, existingProducts = [], a
                                     <Button
                                         type="button"
                                         onClick={handleAddProduct}
-                                        className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                                        className="flex-1 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800"
                                     >
                                         Afegir
                                     </Button>

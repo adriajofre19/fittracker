@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Activity, LogOut, User, Settings, Menu, X, Home, Moon, UtensilsCrossed, BarChart3, FileText } from "lucide-react";
+import { Bell, Activity, LogOut, User, Settings, Menu, X, Home, Moon, UtensilsCrossed, BarChart3, FileText, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
@@ -26,6 +26,21 @@ export default function Navbar() {
     const [userName, setUserName] = useState<string | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        // Carregar preferència de tema de localStorage
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const shouldBeDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+        
+        setIsDarkMode(shouldBeDark);
+        if (shouldBeDark) {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+    }, []);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -65,6 +80,19 @@ export default function Navbar() {
         return () => clearInterval(interval);
     }, []);
 
+    const toggleDarkMode = () => {
+        const newDarkMode = !isDarkMode;
+        setIsDarkMode(newDarkMode);
+        
+        if (newDarkMode) {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+        }
+    };
+
     const handleSignOut = () => {
         window.location.href = "/api/auth/signout";
     };
@@ -88,7 +116,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white shadow-sm backdrop-blur-sm bg-white/95">
+            <nav className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm backdrop-blur-sm bg-white/95 dark:bg-neutral-900/95">
                 <div className="w-full flex justify-center">
                     <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
                         {/* Logo */}
@@ -96,7 +124,7 @@ export default function Navbar() {
                             <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
                                 <Activity className="h-5 w-5 text-white" />
                             </div>
-                            <span className="font-bold text-lg text-neutral-900 hidden sm:inline-block">FitTracker</span>
+                            <span className="font-bold text-lg text-neutral-900 dark:text-neutral-100 hidden sm:inline-block">FitTracker</span>
                         </a>
 
                         {/* Navigation Links - Center */}
@@ -106,7 +134,7 @@ export default function Navbar() {
                                     <NavigationMenuLink
                                         href="/"
                                         className={cn(
-                                            "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus:bg-neutral-100 focus:text-neutral-900 focus:outline-none"
+                                            "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 focus:bg-neutral-100 dark:focus:bg-neutral-800 focus:text-neutral-900 dark:focus:text-neutral-100 focus:outline-none"
                                         )}
                                     >
                                         Home
@@ -162,6 +190,21 @@ export default function Navbar() {
 
                         {/* Right Side - Auth or User Menu */}
                         <div className="flex items-center gap-2 sm:gap-3">
+                            {/* Botó de mode fosc/clar */}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={toggleDarkMode}
+                                className="h-9 w-9 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-100 dark:hover:bg-neutral-800"
+                                aria-label={isDarkMode ? "Canviar a mode clar" : "Canviar a mode fosc"}
+                            >
+                                {isDarkMode ? (
+                                    <Sun className="h-5 w-5" />
+                                ) : (
+                                    <Moon className="h-5 w-5" />
+                                )}
+                            </Button>
+
                             {isAuthenticated ? (
                                 <>
 
@@ -170,36 +213,36 @@ export default function Navbar() {
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <button className="hidden sm:flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-                                                <Avatar className="h-9 w-9 border-2 border-neutral-200">
+                                                <Avatar className="h-9 w-9 border-2 border-neutral-200 dark:border-neutral-700">
                                                     <AvatarImage src="" alt={userName || "User"} />
                                                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
                                                         {userName?.charAt(0).toUpperCase() || "U"}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="hidden lg:block text-left">
-                                                    <div className="text-sm font-semibold text-neutral-900">
+                                                    <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                                                         {userName || "User"}
                                                     </div>
-                                                    <div className="text-xs text-neutral-500">
+                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400">
                                                         {userRole || "User"}
                                                     </div>
                                                 </div>
                                             </button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-56 bg-white border-neutral-200 shadow-lg">
-                                            <DropdownMenuLabel className="text-neutral-900 font-semibold">
+                                        <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-lg">
+                                            <DropdownMenuLabel className="text-neutral-900 dark:text-neutral-100 font-semibold">
                                                 {userName || "User"}
                                             </DropdownMenuLabel>
-                                            <DropdownMenuSeparator className="bg-neutral-200" />
-                                            <DropdownMenuItem className="text-neutral-700 hover:bg-neutral-100 cursor-pointer">
+                                            <DropdownMenuSeparator className="bg-neutral-200 dark:bg-neutral-800" />
+                                            <DropdownMenuItem className="text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer">
                                                 <User className="mr-2 h-4 w-4" />
                                                 Perfil
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem className="text-neutral-700 hover:bg-neutral-100 cursor-pointer">
+                                            <DropdownMenuItem className="text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer">
                                                 <Settings className="mr-2 h-4 w-4" />
                                                 Configuració
                                             </DropdownMenuItem>
-                                            <DropdownMenuSeparator className="bg-neutral-200" />
+                                            <DropdownMenuSeparator className="bg-neutral-200 dark:bg-neutral-800" />
                                             <DropdownMenuItem
                                                 onClick={handleSignOut}
                                                 className="text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer"
@@ -267,23 +310,23 @@ export default function Navbar() {
 
             {/* Mobile Menu - Normal dropdown without modal */}
             {mobileMenuOpen && (
-                <div className="sm:hidden border-t border-neutral-200 bg-white shadow-md">
+                <div className="sm:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-md">
                     <div className="container px-4 py-4 space-y-1">
                         {/* User Info Section */}
                         {isAuthenticated && (
-                            <div className="pb-3 mb-3 border-b border-neutral-200">
+                            <div className="pb-3 mb-3 border-b border-neutral-200 dark:border-neutral-800">
                                 <div className="flex items-center gap-3 px-2 py-2">
-                                    <Avatar className="h-10 w-10 border-2 border-neutral-200">
+                                    <Avatar className="h-10 w-10 border-2 border-neutral-200 dark:border-neutral-700">
                                         <AvatarImage src="" alt={userName || "User"} />
                                         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
                                             {userName?.charAt(0).toUpperCase() || "U"}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1">
-                                        <div className="text-sm font-semibold text-neutral-900">
+                                        <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                                             {userName || "User"}
                                         </div>
-                                        <div className="text-xs text-neutral-500">
+                                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
                                             {userEmail || ""}
                                         </div>
                                     </div>
@@ -294,7 +337,7 @@ export default function Navbar() {
                         {/* Navigation Links */}
                         <a
                             href="/"
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             <Home className="h-4 w-4" />
@@ -305,7 +348,7 @@ export default function Navbar() {
                             <>
                                 <a
                                     href="/sleep"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <Moon className="h-4 w-4" />
@@ -313,7 +356,7 @@ export default function Navbar() {
                                 </a>
                                 <a
                                     href="/meals"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <UtensilsCrossed className="h-4 w-4" />
@@ -321,7 +364,7 @@ export default function Navbar() {
                                 </a>
                                 <a
                                     href="/routines"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <Activity className="h-4 w-4" />
@@ -329,7 +372,7 @@ export default function Navbar() {
                                 </a>
                                 <a
                                     href="/routine-templates"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <FileText className="h-4 w-4" />
@@ -340,10 +383,29 @@ export default function Navbar() {
 
                         {/* Separator */}
                         {isAuthenticated && (
-                            <div className="pt-3 mt-3 border-t border-neutral-200 space-y-1">
+                            <div className="pt-3 mt-3 border-t border-neutral-200 dark:border-neutral-800 space-y-1">
+                                <button
+                                    onClick={() => {
+                                        toggleDarkMode();
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                                >
+                                    {isDarkMode ? (
+                                        <>
+                                            <Sun className="h-4 w-4" />
+                                            Mode clar
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Moon className="h-4 w-4" />
+                                            Mode fosc
+                                        </>
+                                    )}
+                                </button>
                                 <a
                                     href="#"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <User className="h-4 w-4" />
@@ -351,7 +413,7 @@ export default function Navbar() {
                                 </a>
                                 <a
                                     href="#"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <Settings className="h-4 w-4" />

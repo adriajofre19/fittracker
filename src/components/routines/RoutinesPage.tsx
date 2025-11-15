@@ -395,7 +395,7 @@ export default function RoutinesPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-neutral-600">Carregant...</div>
+                <div className="text-neutral-600 dark:text-neutral-400">Carregant...</div>
             </div>
         );
     }
@@ -403,10 +403,10 @@ export default function RoutinesPage() {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
             <div className="text-center sm:text-left space-y-2">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
                     Rutines d'Entrenament
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400">
                     Selecciona un dia al calendari per veure o afegir rutines d'entrenament
                 </p>
             </div>
@@ -438,7 +438,7 @@ export default function RoutinesPage() {
                                     <DialogTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-full gap-2 border-blue-300 text-blue-700 hover:bg-blue-50"
+                                            className="w-full gap-2 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950"
                                         >
                                             <FileText className="h-4 w-4" />
                                             Assignar plantilla
@@ -446,11 +446,11 @@ export default function RoutinesPage() {
                                     </DialogTrigger>
                                     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                                         <DialogHeader>
-                                            <DialogTitle>Selecciona una plantilla per assignar</DialogTitle>
+                                            <DialogTitle className="text-neutral-900 dark:text-neutral-100">Selecciona una plantilla per assignar</DialogTitle>
                                         </DialogHeader>
                                         <div className="space-y-2 mt-4">
                                             {templates.length === 0 ? (
-                                                <div className="text-center py-8 text-neutral-500">
+                                                <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
                                                     <p>No tens plantilles creades</p>
                                                     <Button
                                                         variant="link"
@@ -470,27 +470,27 @@ export default function RoutinesPage() {
                                                     return (
                                                         <div
                                                             key={template.id}
-                                                            className="p-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                                                            className="p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                                                         >
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-3 flex-1">
-                                                                    <div className="p-1.5 rounded-lg bg-neutral-100">
-                                                                        <Icon className="h-4 w-4 text-neutral-700" />
+                                                                    <div className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                                                                        <Icon className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
                                                                     </div>
                                                                     <div className="flex-1 min-w-0">
                                                                         <div className="flex items-center gap-2">
-                                                                            <h4 className="font-semibold text-neutral-900">
+                                                                            <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">
                                                                                 {template.name}
                                                                             </h4>
                                                                             {template.is_favorite && (
-                                                                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                                                                <Star className="h-4 w-4 fill-yellow-400 dark:fill-yellow-500 text-yellow-400 dark:text-yellow-500" />
                                                                             )}
                                                                         </div>
                                                                         {template.description && (
-                                                                            <p className="text-sm text-neutral-500 truncate">{template.description}</p>
+                                                                            <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate">{template.description}</p>
                                                                         )}
                                                                         {summary && (
-                                                                            <p className="text-xs text-neutral-400 mt-1">{summary}</p>
+                                                                            <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">{summary}</p>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -524,7 +524,7 @@ export default function RoutinesPage() {
                                                                         variant="outline"
                                                                         size="sm"
                                                                         onClick={() => handleOpenRecurringDialog(template)}
-                                                                        className="gap-2 border-blue-300 text-blue-700 hover:bg-blue-50"
+                                                                        className="gap-2 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950"
                                                                     >
                                                                         <Repeat className="h-4 w-4" />
                                                                         Recurrent
@@ -543,18 +543,18 @@ export default function RoutinesPage() {
                                 <Dialog open={isRecurringDialogOpen} onOpenChange={setIsRecurringDialogOpen}>
                                     <DialogContent className="max-w-md">
                                         <DialogHeader>
-                                            <DialogTitle>Assignar plantilla de forma recurrent</DialogTitle>
+                                            <DialogTitle className="text-neutral-900 dark:text-neutral-100">Assignar plantilla de forma recurrent</DialogTitle>
                                         </DialogHeader>
                                         {selectedTemplate && (
                                             <div className="space-y-4 mt-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                                                         Plantilla: {selectedTemplate.name}
                                                     </label>
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                                                         Dies de la setmana *
                                                     </label>
                                                     <div className="grid grid-cols-2 gap-2">
@@ -564,8 +564,8 @@ export default function RoutinesPage() {
                                                                 type="button"
                                                                 onClick={() => toggleWeekday(weekday)}
                                                                 className={`px-3 py-2 rounded-md text-sm border transition-colors ${selectedWeekdays.includes(weekday)
-                                                                    ? "bg-blue-600 text-white border-blue-600"
-                                                                    : "bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50"
+                                                                    ? "bg-blue-600 dark:bg-blue-700 text-white border-blue-600 dark:border-blue-700"
+                                                                    : "bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                                                     }`}
                                                             >
                                                                 {getWeekdayName(weekday)}
@@ -576,32 +576,32 @@ export default function RoutinesPage() {
 
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
-                                                        <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                                             Data d'inici *
                                                         </label>
                                                         <input
                                                             type="date"
                                                             value={format(recurringStartDate, "yyyy-MM-dd")}
                                                             onChange={(e) => setRecurringStartDate(new Date(e.target.value))}
-                                                            className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-sm"
+                                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-sm text-neutral-900 dark:text-neutral-100"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                                             Data final *
                                                         </label>
                                                         <input
                                                             type="date"
                                                             value={format(recurringEndDate, "yyyy-MM-dd")}
                                                             onChange={(e) => setRecurringEndDate(new Date(e.target.value))}
-                                                            className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-sm"
+                                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-sm text-neutral-900 dark:text-neutral-100"
                                                         />
                                                     </div>
                                                 </div>
 
                                                 {selectedWeekdays.length > 0 && (
-                                                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                                                        <p className="text-sm text-blue-900">
+                                                    <div className="p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md">
+                                                        <p className="text-sm text-blue-900 dark:text-blue-100">
                                                             S'assignarà la plantilla a{" "}
                                                             <strong>
                                                                 {getDatesForWeekdays(recurringStartDate, recurringEndDate, selectedWeekdays).length} dia
@@ -615,7 +615,7 @@ export default function RoutinesPage() {
                                                     <Button
                                                         onClick={handleAssignRecurring}
                                                         disabled={selectedWeekdays.length === 0 || isAssigningRecurring}
-                                                        className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                                                        className="flex-1 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800"
                                                     >
                                                         {isAssigningRecurring ? "Assignant..." : "Assignar"}
                                                     </Button>
@@ -657,16 +657,16 @@ export default function RoutinesPage() {
                             </div>
                         </>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center py-12 sm:py-16 bg-white border border-neutral-200 rounded-lg shadow-sm">
+                        <div className="h-full flex flex-col items-center justify-center text-center py-12 sm:py-16 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm">
                             <div className="space-y-4 px-4">
-                                <div className="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center">
-                                    <Activity className="h-8 w-8 text-purple-600" />
+                                <div className="w-16 h-16 mx-auto bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                                    <Activity className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                                 </div>
                                 <div>
-                                    <p className="text-base sm:text-lg font-medium text-neutral-700 mb-2">
+                                    <p className="text-base sm:text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                                         No hi ha rutines per aquest dia
                                     </p>
-                                    <p className="text-sm text-neutral-500 mb-6">
+                                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
                                         Afegeix una rutina d'entrenament per començar
                                     </p>
                                 </div>
@@ -694,9 +694,9 @@ export default function RoutinesPage() {
 
             {/* Formulari normal - Sense modal */}
             {isFormOpen && selectedDate && (
-                <div className="mt-6 bg-white border border-neutral-200 rounded-lg shadow-sm p-4 sm:p-6">
-                    <div className="mb-4 pb-4 border-b border-neutral-200 flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-neutral-900">
+                <div className="mt-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-4 sm:p-6">
+                    <div className="mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                             {editingRecord
                                 ? `Editar rutina de ${routineTypeOptions.find((o) => o.type === selectedRoutineType)?.label}`
                                 : `Afegir rutina de ${routineTypeOptions.find((o) => o.type === selectedRoutineType)?.label}`}
@@ -705,7 +705,7 @@ export default function RoutinesPage() {
                             variant="ghost"
                             size="icon"
                             onClick={handleCloseForm}
-                            className="h-8 w-8 text-neutral-500 hover:text-neutral-900"
+                            className="h-8 w-8 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
                         >
                             <X className="h-5 w-5" />
                         </Button>

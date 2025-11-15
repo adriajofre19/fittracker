@@ -28,10 +28,10 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
     };
 
     return (
-        <Card className="bg-white border border-neutral-200 shadow-sm h-full flex flex-col">
+        <Card className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm h-full flex flex-col">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-neutral-900 flex items-center gap-2">
+                    <CardTitle className="text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                         <UtensilsCrossed className="h-5 w-5" />
                         Registre d'àpats
                     </CardTitle>
@@ -49,21 +49,21 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="text-sm text-neutral-600 mb-4">
+                <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                     {format(mealDate, "EEEE, d MMMM yyyy", { locale: ca })}
                 </div>
 
                 {hasMeal(record.breakfast) && (
-                    <div className="pt-2 border-t border-neutral-200">
-                        <p className="text-sm font-medium text-neutral-700 mb-2">
+                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             {mealLabels.breakfast}
                         </p>
                         {record.breakfast?.products && record.breakfast.products.length > 0 ? (
                             <div className="space-y-2">
                                 {record.breakfast.products.map((product: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 rounded border border-neutral-200">
+                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-800">
                                         <div>
-                                            <p className="text-sm font-medium text-neutral-900">{product.product_name}</p>
+                                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{product.product_name}</p>
                                             <p className="text-xs text-neutral-500">
                                                 {product.quantity}g
                                                 {product.calories && ` • ${product.calories.toFixed(0)} kcal`}
@@ -72,7 +72,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                     </div>
                                 ))}
                                 {record.breakfast.totals && (
-                                    <div className="pt-2 border-t border-neutral-200 text-xs text-neutral-600">
+                                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-400">
                                         <span className="font-medium">
                                             Total: {record.breakfast.totals.calories?.toFixed(0) || 0} kcal
                                         </span>
@@ -80,7 +80,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                 )}
                             </div>
                         ) : (
-                            <p className="text-sm text-neutral-600 whitespace-pre-wrap">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
                                 {record.breakfast?.description}
                             </p>
                         )}
@@ -88,16 +88,16 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                 )}
 
                 {hasMeal(record.lunch) && (
-                    <div className="pt-2 border-t border-neutral-200">
-                        <p className="text-sm font-medium text-neutral-700 mb-2">
+                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             {mealLabels.lunch}
                         </p>
                         {record.lunch?.products && record.lunch.products.length > 0 ? (
                             <div className="space-y-2">
                                 {record.lunch.products.map((product: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 rounded border border-neutral-200">
+                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-800">
                                         <div>
-                                            <p className="text-sm font-medium text-neutral-900">{product.product_name}</p>
+                                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{product.product_name}</p>
                                             <p className="text-xs text-neutral-500">
                                                 {product.quantity}g
                                                 {product.calories && ` • ${product.calories.toFixed(0)} kcal`}
@@ -106,7 +106,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                     </div>
                                 ))}
                                 {record.lunch.totals && (
-                                    <div className="pt-2 border-t border-neutral-200 text-xs text-neutral-600">
+                                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-400">
                                         <span className="font-medium">
                                             Total: {record.lunch.totals.calories?.toFixed(0) || 0} kcal
                                         </span>
@@ -114,7 +114,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                 )}
                             </div>
                         ) : (
-                            <p className="text-sm text-neutral-600 whitespace-pre-wrap">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
                                 {record.lunch?.description}
                             </p>
                         )}
@@ -122,16 +122,16 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                 )}
 
                 {hasMeal(record.snack) && (
-                    <div className="pt-2 border-t border-neutral-200">
-                        <p className="text-sm font-medium text-neutral-700 mb-2">
+                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             {mealLabels.snack}
                         </p>
                         {record.snack?.products && record.snack.products.length > 0 ? (
                             <div className="space-y-2">
                                 {record.snack.products.map((product: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 rounded border border-neutral-200">
+                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-800">
                                         <div>
-                                            <p className="text-sm font-medium text-neutral-900">{product.product_name}</p>
+                                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{product.product_name}</p>
                                             <p className="text-xs text-neutral-500">
                                                 {product.quantity}g
                                                 {product.calories && ` • ${product.calories.toFixed(0)} kcal`}
@@ -140,7 +140,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                     </div>
                                 ))}
                                 {record.snack.totals && (
-                                    <div className="pt-2 border-t border-neutral-200 text-xs text-neutral-600">
+                                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-400">
                                         <span className="font-medium">
                                             Total: {record.snack.totals.calories?.toFixed(0) || 0} kcal
                                         </span>
@@ -148,7 +148,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                 )}
                             </div>
                         ) : (
-                            <p className="text-sm text-neutral-600 whitespace-pre-wrap">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
                                 {record.snack?.description}
                             </p>
                         )}
@@ -156,16 +156,16 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                 )}
 
                 {hasMeal(record.dinner) && (
-                    <div className="pt-2 border-t border-neutral-200">
-                        <p className="text-sm font-medium text-neutral-700 mb-2">
+                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             {mealLabels.dinner}
                         </p>
                         {record.dinner?.products && record.dinner.products.length > 0 ? (
                             <div className="space-y-2">
                                 {record.dinner.products.map((product: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 rounded border border-neutral-200">
+                                    <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-800">
                                         <div>
-                                            <p className="text-sm font-medium text-neutral-900">{product.product_name}</p>
+                                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{product.product_name}</p>
                                             <p className="text-xs text-neutral-500">
                                                 {product.quantity}g
                                                 {product.calories && ` • ${product.calories.toFixed(0)} kcal`}
@@ -174,7 +174,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                     </div>
                                 ))}
                                 {record.dinner.totals && (
-                                    <div className="pt-2 border-t border-neutral-200 text-xs text-neutral-600">
+                                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-400">
                                         <span className="font-medium">
                                             Total: {record.dinner.totals.calories?.toFixed(0) || 0} kcal
                                         </span>
@@ -182,21 +182,21 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                                 )}
                             </div>
                         ) : (
-                            <p className="text-sm text-neutral-600 whitespace-pre-wrap">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
                                 {record.dinner?.description}
                             </p>
                         )}
                     </div>
                 )}
 
-                {!hasMeal(record.breakfast) && 
-                 !hasMeal(record.lunch) && 
-                 !hasMeal(record.snack) && 
-                 !hasMeal(record.dinner) && (
-                    <div className="text-center py-8 text-neutral-500">
-                        No hi ha àpats registrats per aquest dia
-                    </div>
-                )}
+                {!hasMeal(record.breakfast) &&
+                    !hasMeal(record.lunch) &&
+                    !hasMeal(record.snack) &&
+                    !hasMeal(record.dinner) && (
+                        <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
+                            No hi ha àpats registrats per aquest dia
+                        </div>
+                    )}
 
                 {record.water_liters !== undefined && record.water_liters > 0 && (
                     <div className="pt-2 border-t border-neutral-200">
@@ -204,7 +204,7 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                             <p className="text-sm font-medium text-neutral-700">
                                 Aigua beguda
                             </p>
-                            <p className="text-sm font-semibold text-blue-600">
+                            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                                 {record.water_liters.toFixed(1)} L
                             </p>
                         </div>
@@ -212,8 +212,8 @@ export default function MealsDisplay({ record, onEdit }: MealsDisplayProps) {
                 )}
 
                 {record.notes && (
-                    <div className="pt-2 border-t border-neutral-200">
-                        <p className="text-sm font-medium text-neutral-700 mb-2">Notes</p>
+                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Notes</p>
                         <p className="text-sm text-neutral-600 whitespace-pre-wrap">
                             {record.notes}
                         </p>

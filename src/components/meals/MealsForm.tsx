@@ -112,22 +112,22 @@ export default function MealsForm({
 
         try {
             const mealDate = format(date, "yyyy-MM-dd");
-            
+
             const mealData: Partial<Meal> = {
                 meal_date: mealDate,
-                breakfast: breakfastProducts.length > 0 ? { 
+                breakfast: breakfastProducts.length > 0 ? {
                     products: breakfastProducts,
                     totals: calculateTotals(breakfastProducts)
                 } : null,
-                lunch: lunchProducts.length > 0 ? { 
+                lunch: lunchProducts.length > 0 ? {
                     products: lunchProducts,
                     totals: calculateTotals(lunchProducts)
                 } : null,
-                snack: snackProducts.length > 0 ? { 
+                snack: snackProducts.length > 0 ? {
                     products: snackProducts,
                     totals: calculateTotals(snackProducts)
                 } : null,
-                dinner: dinnerProducts.length > 0 ? { 
+                dinner: dinnerProducts.length > 0 ? {
                     products: dinnerProducts,
                     totals: calculateTotals(dinnerProducts)
                 } : null,
@@ -145,7 +145,7 @@ export default function MealsForm({
 
     const handleDelete = async () => {
         if (!existingRecord || !onDelete) return;
-        
+
         if (confirm("Estàs segur que vols eliminar aquest registre d'àpats?")) {
             await onDelete(existingRecord.id);
         }
@@ -156,9 +156,9 @@ export default function MealsForm({
         const hasProducts = products.length > 0;
 
         return (
-            <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-md">
+            <div className="p-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-md">
                 <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                         {mealLabels[mealType]}
                     </label>
                     <div onClick={(e) => e.stopPropagation()}>
@@ -169,19 +169,19 @@ export default function MealsForm({
                         />
                     </div>
                 </div>
-                
+
                 {hasProducts && (
                     <div className="space-y-2 mb-2">
                         {products.map((product, index) => (
                             <div
                                 key={`${product.product_id}-${index}`}
-                                className="flex items-center justify-between p-2 bg-white rounded border border-neutral-200"
+                                className="flex items-center justify-between p-2 bg-white dark:bg-neutral-900 rounded border border-neutral-200 dark:border-neutral-800"
                             >
                                 <div className="flex-1">
-                                    <p className="text-sm font-medium text-neutral-900">
+                                    <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                                         {product.product_name}
                                     </p>
-                                    <p className="text-xs text-neutral-500">
+                                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                                         {product.quantity}g
                                         {product.calories && ` • ${product.calories.toFixed(0)} kcal`}
                                     </p>
@@ -191,7 +191,7 @@ export default function MealsForm({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleRemoveProduct(mealType, index)}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
                                 >
                                     <X className="h-4 w-4" />
                                 </Button>
@@ -201,8 +201,8 @@ export default function MealsForm({
                 )}
 
                 {hasProducts && totals.calories > 0 && (
-                    <div className="pt-2 border-t border-neutral-200">
-                        <div className="flex justify-between text-xs text-neutral-600">
+                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <div className="flex justify-between text-xs text-neutral-600 dark:text-neutral-400">
                             <span>Total:</span>
                             <span className="font-medium">
                                 {totals.calories.toFixed(0)} kcal
@@ -241,7 +241,7 @@ export default function MealsForm({
             <div>
                 <label
                     htmlFor="water"
-                    className="block text-sm font-medium text-neutral-700 mb-1.5"
+                    className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                 >
                     Aigua beguda (litres)
                 </label>
@@ -252,7 +252,7 @@ export default function MealsForm({
                     step="0.1"
                     value={waterLiters}
                     onChange={(e) => setWaterLiters(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Ex: 1.5"
                 />
             </div>
@@ -260,7 +260,7 @@ export default function MealsForm({
             <div>
                 <label
                     htmlFor="notes"
-                    className="block text-sm font-medium text-neutral-700 mb-1.5"
+                    className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                 >
                     Notes (opcional)
                 </label>
@@ -269,7 +269,7 @@ export default function MealsForm({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     placeholder="Afegeix notes sobre els àpats..."
                 />
             </div>
@@ -278,7 +278,7 @@ export default function MealsForm({
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                    className="flex-1 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800"
                 >
                     {isSubmitting ? "Desant..." : existingRecord ? "Actualitzar" : "Guardar"}
                 </Button>
@@ -287,7 +287,7 @@ export default function MealsForm({
                         type="button"
                         variant="destructive"
                         onClick={handleDelete}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800"
                     >
                         Eliminar
                     </Button>

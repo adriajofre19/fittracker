@@ -82,7 +82,14 @@ export default function RoutineTemplateForm({
             }
 
             if (existingTemplate.routine_type === "gym" && existingTemplate.gym_data) {
-                setGymExercises(existingTemplate.gym_data.exercises || []);
+                // Assegurar que cada exercici té almenys un set
+                const exercises = (existingTemplate.gym_data.exercises || []).map((e) => ({
+                    ...e,
+                    sets: e.sets && e.sets.length > 0
+                        ? e.sets
+                        : [{ reps: 0, weight_kg: undefined, rest_seconds: undefined }],
+                }));
+                setGymExercises(exercises);
                 setGymDuration(existingTemplate.gym_data.total_duration_minutes?.toString() || "");
             }
 
@@ -142,7 +149,15 @@ export default function RoutineTemplateForm({
 
             if (templateType === "gym") {
                 templateData.gym_data = {
-                    exercises: gymExercises.filter((e) => e.exercise_id && e.sets.length > 0),
+                    exercises: gymExercises
+                        .filter((e) => e.exercise_name && e.exercise_name.trim() !== "") // Filtrar per exercise_name (no només exercise_id)
+                        .map((e) => ({
+                            ...e,
+                            // Assegurar que cada exercici té almenys un set
+                            sets: e.sets && e.sets.length > 0
+                                ? e.sets
+                                : [{ reps: 0, weight_kg: undefined, rest_seconds: undefined }],
+                        })),
                     total_duration_minutes: gymDuration ? parseInt(gymDuration) : undefined,
                     notes: notes || undefined,
                 };
@@ -209,14 +224,31 @@ export default function RoutineTemplateForm({
 
     // Gym handlers
     const addGymExercise = (exercise: Exercise) => {
-        setGymExercises([
-            ...gymExercises,
-            {
+        // Comprovar si ja existeix un exercici amb el mateix nom sense exercise_id
+        const existingIndex = gymExercises.findIndex(
+            (e) => !e.exercise_id && e.exercise_name?.toLowerCase() === exercise.name.toLowerCase()
+        );
+
+        if (existingIndex !== -1) {
+            // Actualitzar l'exercici existent amb l'exercise_id
+            const updated = [...gymExercises];
+            updated[existingIndex] = {
+                ...updated[existingIndex],
                 exercise_id: exercise.id,
                 exercise_name: exercise.name,
-                sets: [{ reps: 0, weight_kg: undefined, rest_seconds: undefined }],
-            },
-        ]);
+            };
+            setGymExercises(updated);
+        } else {
+            // Afegir un nou exercici
+            setGymExercises([
+                ...gymExercises,
+                {
+                    exercise_id: exercise.id,
+                    exercise_name: exercise.name,
+                    sets: [{ reps: 0, weight_kg: undefined, rest_seconds: undefined }],
+                },
+            ]);
+        }
         setShowExerciseSelector(false);
         setExerciseSearch("");
     };
@@ -299,7 +331,7 @@ export default function RoutineTemplateForm({
             {/* Nom i descripció */}
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Nom de la rutina *
                     </label>
                     <input
@@ -308,11 +340,11 @@ export default function RoutineTemplateForm({
                         onChange={(e) => setName(e.target.value)}
                         required
                         placeholder="Ex: Entrenament de força superior"
-                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                        className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Descripció (opcional)
                     </label>
                     <input
@@ -320,7 +352,7 @@ export default function RoutineTemplateForm({
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Breu descripció de la rutina"
-                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                        className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                     />
                 </div>
                 <div className="flex items-center gap-2">
@@ -331,7 +363,7 @@ export default function RoutineTemplateForm({
                         onChange={(e) => setIsFavorite(e.target.checked)}
                         className="w-4 h-4"
                     />
-                    <label htmlFor="isFavorite" className="flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
+                    <label htmlFor="isFavorite" className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer">
                         <Star className={`h-4 w-4 ${isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
                         Marcar com a favorita
                     </label>
@@ -343,13 +375,13 @@ export default function RoutineTemplateForm({
             {templateType === "athletics" && (
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             Sèries d'atletisme
                         </label>
                         {athleticsSeries.map((serie, index) => (
-                            <div key={index} className="mb-3 p-3 border border-neutral-200 rounded-lg space-y-2">
+                            <div key={index} className="mb-3 p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg space-y-2">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-neutral-700">Sèrie {index + 1}</span>
+                                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Sèrie {index + 1}</span>
                                     {athleticsSeries.length > 1 && (
                                         <Button
                                             type="button"
@@ -364,33 +396,33 @@ export default function RoutineTemplateForm({
                                 </div>
                                 <div className="grid grid-cols-3 gap-2">
                                     <div>
-                                        <label className="block text-xs text-neutral-600 mb-1">Distància</label>
+                                        <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Distància</label>
                                         <input
                                             type="text"
                                             value={serie.distance}
                                             onChange={(e) => updateAthleticsSeries(index, "distance", e.target.value)}
                                             placeholder="100m"
-                                            className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                            className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-neutral-600 mb-1">Temps</label>
+                                        <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Temps</label>
                                         <input
                                             type="text"
                                             value={serie.time}
                                             onChange={(e) => updateAthleticsSeries(index, "time", e.target.value)}
                                             placeholder="12.5s"
-                                            className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                            className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-neutral-600 mb-1">Descans</label>
+                                        <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Descans</label>
                                         <input
                                             type="text"
                                             value={serie.rest}
                                             onChange={(e) => updateAthleticsSeries(index, "rest", e.target.value)}
                                             placeholder="2min"
-                                            className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                            className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                         />
                                     </div>
                                 </div>
@@ -407,7 +439,7 @@ export default function RoutineTemplateForm({
                         </Button>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             Distància total (opcional)
                         </label>
                         <input
@@ -415,7 +447,7 @@ export default function RoutineTemplateForm({
                             value={athleticsTotalDistance}
                             onChange={(e) => setAthleticsTotalDistance(e.target.value)}
                             placeholder="2.5km"
-                            className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                         />
                     </div>
                 </div>
@@ -426,7 +458,7 @@ export default function RoutineTemplateForm({
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                 Distància (km)
                             </label>
                             <input
@@ -435,11 +467,11 @@ export default function RoutineTemplateForm({
                                 value={runningDistance}
                                 onChange={(e) => setRunningDistance(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                                className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                 Durada (min)
                             </label>
                             <input
@@ -447,13 +479,13 @@ export default function RoutineTemplateForm({
                                 value={runningDuration}
                                 onChange={(e) => setRunningDuration(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                                className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                             />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                 Ritme per km
                             </label>
                             <input
@@ -461,18 +493,18 @@ export default function RoutineTemplateForm({
                                 value={runningPace}
                                 onChange={(e) => setRunningPace(e.target.value)}
                                 placeholder="5:00"
-                                className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                                className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                 Pulso mitjà (bpm)
                             </label>
                             <input
                                 type="number"
                                 value={runningHeartRate}
                                 onChange={(e) => setRunningHeartRate(e.target.value)}
-                                className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                                className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                             />
                         </div>
                     </div>
@@ -483,14 +515,14 @@ export default function RoutineTemplateForm({
             {templateType === "gym" && (
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-base font-semibold text-neutral-900 mb-4">
+                        <label className="block text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
                             Exercicis
                         </label>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {gymExercises.map((exercise, exerciseIndex) => (
-                                <div key={exerciseIndex} className="p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                                <div key={exerciseIndex} className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-neutral-50 dark:bg-neutral-800">
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="font-semibold text-base text-neutral-900">
+                                        <span className="font-semibold text-base text-neutral-900 dark:text-neutral-100">
                                             {exercise.exercise_name || `Exercici ${exerciseIndex + 1}`}
                                         </span>
                                         <Button
@@ -505,8 +537,8 @@ export default function RoutineTemplateForm({
                                     </div>
                                     <div className="space-y-2">
                                         {exercise.sets.map((set, setIndex) => (
-                                            <div key={setIndex} className="flex items-center gap-2 p-2 bg-white rounded-md border border-neutral-200">
-                                                <span className="text-sm font-medium text-neutral-700 w-16">Sèrie {setIndex + 1}:</span>
+                                            <div key={setIndex} className="flex items-center gap-2 p-2 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-800">
+                                                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300 w-16">Sèrie {setIndex + 1}:</span>
                                                 <input
                                                     type="number"
                                                     placeholder="Reps"
@@ -514,7 +546,7 @@ export default function RoutineTemplateForm({
                                                     onChange={(e) =>
                                                         updateGymSet(exerciseIndex, setIndex, "reps", parseInt(e.target.value))
                                                     }
-                                                    className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md"
+                                                    className="flex-1 px-3 py-2 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                                 />
                                                 <input
                                                     type="number"
@@ -529,7 +561,7 @@ export default function RoutineTemplateForm({
                                                             parseFloat(e.target.value)
                                                         )
                                                     }
-                                                    className="w-24 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md"
+                                                    className="w-24 px-3 py-2 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                                 />
                                                 <input
                                                     type="number"
@@ -543,7 +575,7 @@ export default function RoutineTemplateForm({
                                                             parseInt(e.target.value)
                                                         )
                                                     }
-                                                    className="w-28 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md"
+                                                    className="w-28 px-3 py-2 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                                 />
                                                 {exercise.sets.length > 1 && (
                                                     <Button
@@ -551,7 +583,7 @@ export default function RoutineTemplateForm({
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => removeGymSet(exerciseIndex, setIndex)}
-                                                        className="h-8 w-8 text-red-600 hover:bg-red-50"
+                                                        className="h-8 w-8 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
                                                     >
                                                         <X className="h-4 w-4" />
                                                     </Button>
@@ -583,20 +615,20 @@ export default function RoutineTemplateForm({
                                         setShowExerciseSelector(true);
                                     }}
                                     onFocus={() => setShowExerciseSelector(true)}
-                                    className="w-full px-4 py-3 bg-white border-2 border-neutral-300 rounded-lg text-base"
+                                    className="w-full px-4 py-3 bg-white dark:bg-neutral-900 border-2 border-neutral-300 dark:border-neutral-700 rounded-lg text-base text-neutral-900 dark:text-neutral-100"
                                 />
                                 {showExerciseSelector && filteredExercises.length > 0 && (
-                                    <div className="absolute z-10 w-full mt-2 bg-white border-2 border-neutral-300 rounded-lg shadow-xl max-h-80 overflow-y-auto">
+                                    <div className="absolute z-10 w-full mt-2 bg-white dark:bg-neutral-900 border-2 border-neutral-300 dark:border-neutral-700 rounded-lg shadow-xl max-h-80 overflow-y-auto">
                                         {filteredExercises.slice(0, 20).map((exercise) => (
                                             <button
                                                 key={exercise.id}
                                                 type="button"
                                                 onClick={() => addGymExercise(exercise)}
-                                                className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm border-b border-neutral-100 last:border-b-0"
+                                                className="w-full text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-950 text-sm border-b border-neutral-100 dark:border-neutral-800 last:border-b-0"
                                             >
-                                                <div className="font-medium text-neutral-900">{exercise.name}</div>
+                                                <div className="font-medium text-neutral-900 dark:text-neutral-100">{exercise.name}</div>
                                                 {exercise.muscle_groups && exercise.muscle_groups.length > 0 && (
-                                                    <div className="text-xs text-neutral-500 mt-1">
+                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                                                         {exercise.muscle_groups.join(", ")}
                                                     </div>
                                                 )}
@@ -620,14 +652,14 @@ export default function RoutineTemplateForm({
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             Durada total (min) (opcional)
                         </label>
                         <input
                             type="number"
                             value={gymDuration}
                             onChange={(e) => setGymDuration(e.target.value)}
-                            className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                         />
                     </div>
                 </div>
@@ -636,7 +668,7 @@ export default function RoutineTemplateForm({
             {/* Steps Form */}
             {templateType === "steps" && (
                 <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Nombre de passos
                     </label>
                     <input
@@ -644,7 +676,7 @@ export default function RoutineTemplateForm({
                         value={stepsCount}
                         onChange={(e) => setStepsCount(e.target.value)}
                         required
-                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                        className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                     />
                 </div>
             )}
@@ -654,7 +686,7 @@ export default function RoutineTemplateForm({
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                 Quilòmetres totals (km)
                             </label>
                             <input
@@ -663,11 +695,11 @@ export default function RoutineTemplateForm({
                                 value={footballKms}
                                 onChange={(e) => setFootballKms(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                                className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                                 Calories
                             </label>
                             <input
@@ -675,7 +707,7 @@ export default function RoutineTemplateForm({
                                 value={footballCalories}
                                 onChange={(e) => setFootballCalories(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                                className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                             />
                         </div>
                     </div>
@@ -685,17 +717,17 @@ export default function RoutineTemplateForm({
             {/* Yo-Yo Test Form */}
             {templateType === "yoyo_test" && (
                 <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <label className="block text-sm font-semibold text-neutral-900 mb-3">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <label className="block text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
                             Afegir sèrie Yo-Yo Test
                         </label>
                         <div className="grid grid-cols-2 gap-3 mb-3">
                             <div>
-                                <label className="block text-xs text-neutral-600 mb-1">Nivell inicial</label>
+                                <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Nivell inicial</label>
                                 <select
                                     value={yoyoNewStartLevel}
                                     onChange={(e) => setYoyoNewStartLevel(e.target.value)}
-                                    className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                    className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                 >
                                     <option value="">Selecciona nivell inicial</option>
                                     {yoyoLevels.map((level) => (
@@ -706,11 +738,11 @@ export default function RoutineTemplateForm({
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs text-neutral-600 mb-1">Nivell final</label>
+                                <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Nivell final</label>
                                 <select
                                     value={yoyoNewEndLevel}
                                     onChange={(e) => setYoyoNewEndLevel(e.target.value)}
-                                    className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                    className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                 >
                                     <option value="">Selecciona nivell final</option>
                                     {yoyoLevels.map((level) => (
@@ -734,7 +766,7 @@ export default function RoutineTemplateForm({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             Sèries Yo-Yo Test ({yoyoSeries.length} sèrie{yoyoSeries.length !== 1 ? 's' : ''})
                         </label>
                         {yoyoSeries.length === 0 ? (
@@ -743,7 +775,7 @@ export default function RoutineTemplateForm({
                             </div>
                         ) : (
                             yoyoSeries.map((serie, index) => (
-                                <div key={index} className="mb-3 p-3 border border-neutral-200 rounded-lg space-y-2">
+                                <div key={index} className="mb-3 p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg space-y-2">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-neutral-700">
                                             Sèrie {index + 1}: Del {serie.start_level} al {serie.end_level}
@@ -760,11 +792,11 @@ export default function RoutineTemplateForm({
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                            <label className="block text-xs text-neutral-600 mb-1">Nivell inicial</label>
+                                            <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Nivell inicial</label>
                                             <select
                                                 value={serie.start_level}
                                                 onChange={(e) => updateYoyoSeries(index, "start_level", e.target.value)}
-                                                className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                                className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                             >
                                                 {yoyoLevels.map((level) => (
                                                     <option key={level} value={level}>
@@ -774,11 +806,11 @@ export default function RoutineTemplateForm({
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-xs text-neutral-600 mb-1">Nivell final</label>
+                                            <label className="block text-xs text-neutral-600 dark:text-neutral-400 mb-1">Nivell final</label>
                                             <select
                                                 value={serie.end_level}
                                                 onChange={(e) => updateYoyoSeries(index, "end_level", e.target.value)}
-                                                className="w-full px-2 py-1.5 text-sm bg-white border border-neutral-300 rounded-md"
+                                                className="w-full px-2 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-md text-neutral-900 dark:text-neutral-100"
                                             >
                                                 {yoyoLevels.map((level) => (
                                                     <option key={level} value={level}>
