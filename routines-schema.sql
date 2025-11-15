@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS routines (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     routine_date DATE NOT NULL,
-    routine_type TEXT NOT NULL CHECK (routine_type IN ('athletics', 'running', 'gym', 'steps')),
+    routine_type TEXT NOT NULL CHECK (routine_type IN ('athletics', 'running', 'gym', 'steps', 'football_match', 'yoyo_test')),
     -- Per atletisme (sèries)
     athletics_data JSONB DEFAULT NULL, -- { series: [{ distance: "100m", time: "12.5s", rest: "2min" }] }
     -- Per rodatges
@@ -45,6 +45,10 @@ CREATE TABLE IF NOT EXISTS routines (
     gym_data JSONB DEFAULT NULL, -- { exercises: [{ exercise_id: UUID, sets: [{ reps: 10, weight_kg: 50, rest_seconds: 60 }] }] }
     -- Per passos
     steps_count INTEGER DEFAULT NULL,
+    -- Per partits de futbol
+    football_match_data JSONB DEFAULT NULL, -- { total_kms: 8.5, calories: 650 }
+    -- Per Yo-Yo Test
+    yoyo_test_data JSONB DEFAULT NULL, -- { series: [{ level: "0", completed: true }, { level: "19.2", completed: true }] }
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

@@ -26,7 +26,7 @@ async function verifyAuth(cookies: any) {
     }
 }
 
-// GET - Obtenir totes les rutines de l'usuari
+// GET - Obtenir totes les rutines plantilla de l'usuari
 export const GET: APIRoute = async ({ cookies, url }) => {
     const auth = await verifyAuth(cookies);
 
@@ -37,30 +37,22 @@ export const GET: APIRoute = async ({ cookies, url }) => {
         );
     }
 
-    const limit = parseInt(url.searchParams.get("limit") || "100");
-    const offset = parseInt(url.searchParams.get("offset") || "0");
-    const startDate = url.searchParams.get("start_date");
-    const endDate = url.searchParams.get("end_date");
     const routineType = url.searchParams.get("routine_type");
+    const favoritesOnly = url.searchParams.get("favorites_only") === "true";
 
     let query = supabase
-        .from("routines")
+        .from("routine_templates")
         .select("*")
         .eq("user_id", auth.user.id)
-        .order("routine_date", { ascending: false })
-        .order("routine_type", { ascending: true })
-        .range(offset, offset + limit - 1);
-
-    if (startDate) {
-        query = query.gte("routine_date", startDate);
-    }
-
-    if (endDate) {
-        query = query.lte("routine_date", endDate);
-    }
+        .order("is_favorite", { ascending: false })
+        .order("created_at", { ascending: false });
 
     if (routineType) {
         query = query.eq("routine_type", routineType);
+    }
+
+    if (favoritesOnly) {
+        query = query.eq("is_favorite", true);
     }
 
     const { data, error } = await query;
@@ -78,7 +70,7 @@ export const GET: APIRoute = async ({ cookies, url }) => {
     );
 };
 
-// POST - Crear una nova rutina
+// POST - Crear una nova rutina plantilla
 export const POST: APIRoute = async ({ request, cookies }) => {
     const auth = await verifyAuth(cookies);
 
@@ -92,7 +84,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     try {
         const body = await request.json();
         const {
-            routine_date,
+            name,
+            description,
             routine_type,
             athletics_data,
             running_data,
@@ -101,11 +94,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             football_match_data,
             yoyo_test_data,
             notes,
+            is_favorite,
         } = body;
 
-        if (!routine_date || !routine_type) {
+        if (!name || !routine_type) {
             return new Response(
-                JSON.stringify({ error: "Missing required fields: routine_date, routine_type" }),
+                JSON.stringify({ error: "Missing required fields: name, routine_type" }),
                 { status: 400, headers: { "Content-Type": "application/json" } }
             );
         }
@@ -118,55 +112,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             );
         }
 
-        // Validar que hi hagi dades segons el tipus
-        if (routine_type === "athletics" && !athletics_data) {
-            return new Response(
-                JSON.stringify({ error: "athletics_data is required for athletics routine type" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
-        if (routine_type === "running" && !running_data) {
-            return new Response(
-                JSON.stringify({ error: "running_data is required for running routine type" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
-        if (routine_type === "gym" && !gym_data) {
-            return new Response(
-                JSON.stringify({ error: "gym_data is required for gym routine type" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
-        if (routine_type === "steps" && steps_count === undefined) {
-            return new Response(
-                JSON.stringify({ error: "steps_count is required for steps routine type" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
-        if (routine_type === "football_match" && !football_match_data) {
-            return new Response(
-                JSON.stringify({ error: "football_match_data is required for football_match routine type" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
-        if (routine_type === "yoyo_test" && !yoyo_test_data) {
-            return new Response(
-                JSON.stringify({ error: "yoyo_test_data is required for yoyo_test routine type" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
         const { data, error } = await supabase
-            .from("routines")
+            .from("routine_templates")
             .insert([
                 {
                     user_id: auth.user.id,
-                    routine_date,
+                    name,
+                    description: description || null,
                     routine_type,
                     athletics_data: routine_type === "athletics" ? athletics_data : null,
                     running_data: routine_type === "running" ? running_data : null,
@@ -175,6 +127,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
                     football_match_data: routine_type === "football_match" ? football_match_data : null,
                     yoyo_test_data: routine_type === "yoyo_test" ? yoyo_test_data : null,
                     notes: notes || null,
+                    is_favorite: is_favorite || false,
                 },
             ])
             .select()

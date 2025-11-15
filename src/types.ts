@@ -117,7 +117,25 @@ export interface GymData {
     notes?: string;
 }
 
-export type RoutineType = "athletics" | "running" | "gym" | "steps";
+export interface YoYoSeries {
+    start_level: string; // e.g., "0", "1", "2", ..., "19.2"
+    end_level: string; // e.g., "0", "1", "2", ..., "19.2"
+    completed: boolean;
+    notes?: string;
+}
+
+export interface YoYoTestData {
+    series: YoYoSeries[];
+    notes?: string;
+}
+
+export interface FootballMatchData {
+    total_kms: number;
+    calories: number;
+    notes?: string;
+}
+
+export type RoutineType = "athletics" | "running" | "gym" | "steps" | "football_match" | "yoyo_test";
 
 export interface Routine {
     id: string;
@@ -128,7 +146,27 @@ export interface Routine {
     running_data?: RunningData;
     gym_data?: GymData;
     steps_count?: number;
+    football_match_data?: FootballMatchData;
+    yoyo_test_data?: YoYoTestData;
     notes?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface RoutineTemplate {
+    id: string;
+    user_id: string;
+    name: string;
+    description?: string;
+    routine_type: RoutineType;
+    athletics_data?: AthleticsData;
+    running_data?: RunningData;
+    gym_data?: GymData;
+    steps_count?: number;
+    football_match_data?: FootballMatchData;
+    yoyo_test_data?: YoYoTestData;
+    notes?: string;
+    is_favorite: boolean;
     created_at: string;
     updated_at: string;
 }

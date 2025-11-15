@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Activity, LogOut, User, Settings, Menu, X, Home, Moon, UtensilsCrossed, BarChart3 } from "lucide-react";
+import { Bell, Activity, LogOut, User, Settings, Menu, X, Home, Moon, UtensilsCrossed, BarChart3, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
@@ -143,6 +143,16 @@ export default function Navbar() {
                                                 )}
                                             >
                                                 Rutines
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
+                                        <NavigationMenuItem>
+                                            <NavigationMenuLink
+                                                href="/routine-templates"
+                                                className={cn(
+                                                    "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus:bg-neutral-100 focus:text-neutral-900 focus:outline-none"
+                                                )}
+                                            >
+                                                Plantilles
                                             </NavigationMenuLink>
                                         </NavigationMenuItem>
                                     </>
@@ -316,6 +326,14 @@ export default function Navbar() {
                                 >
                                     <Activity className="h-4 w-4" />
                                     Rutines
+                                </a>
+                                <a
+                                    href="/routine-templates"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    Plantilles
                                 </a>
                             </>
                         )}

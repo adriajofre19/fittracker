@@ -26,7 +26,7 @@ async function verifyAuth(cookies: any) {
     }
 }
 
-// GET - Obtenir una rutina específica per ID
+// GET - Obtenir una rutina plantilla específica per ID
 export const GET: APIRoute = async ({ params, cookies }) => {
     const auth = await verifyAuth(cookies);
 
@@ -41,13 +41,13 @@ export const GET: APIRoute = async ({ params, cookies }) => {
 
     if (!id) {
         return new Response(
-            JSON.stringify({ error: "Missing routine ID" }),
+            JSON.stringify({ error: "Missing template ID" }),
             { status: 400, headers: { "Content-Type": "application/json" } }
         );
     }
 
     const { data, error } = await supabase
-        .from("routines")
+        .from("routine_templates")
         .select("*")
         .eq("id", id)
         .eq("user_id", auth.user.id)
@@ -62,7 +62,7 @@ export const GET: APIRoute = async ({ params, cookies }) => {
 
     if (!data) {
         return new Response(
-            JSON.stringify({ error: "Routine not found" }),
+            JSON.stringify({ error: "Template not found" }),
             { status: 404, headers: { "Content-Type": "application/json" } }
         );
     }
@@ -73,7 +73,7 @@ export const GET: APIRoute = async ({ params, cookies }) => {
     );
 };
 
-// PUT - Actualitzar una rutina existent
+// PUT - Actualitzar una rutina plantilla existent
 export const PUT: APIRoute = async ({ params, request, cookies }) => {
     const auth = await verifyAuth(cookies);
 
@@ -88,7 +88,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
 
     if (!id) {
         return new Response(
-            JSON.stringify({ error: "Missing routine ID" }),
+            JSON.stringify({ error: "Missing template ID" }),
             { status: 400, headers: { "Content-Type": "application/json" } }
         );
     }
@@ -96,7 +96,8 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
     try {
         const body = await request.json();
         const {
-            routine_date,
+            name,
+            description,
             routine_type,
             athletics_data,
             running_data,
@@ -105,16 +106,17 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
             football_match_data,
             yoyo_test_data,
             notes,
+            is_favorite,
         } = body;
 
-        // Construir objecte d'actualització només amb els camps proporcionats
         const updateData: any = {};
 
-        if (routine_date !== undefined) updateData.routine_date = routine_date;
+        if (name !== undefined) updateData.name = name;
+        if (description !== undefined) updateData.description = description;
         if (routine_type !== undefined) {
             if (!["athletics", "running", "gym", "steps", "football_match", "yoyo_test"].includes(routine_type)) {
                 return new Response(
-                    JSON.stringify({ error: "Invalid routine_type. Must be: athletics, running, gym, steps, football_match, or yoyo_test" }),
+                    JSON.stringify({ error: "Invalid routine_type" }),
                     { status: 400, headers: { "Content-Type": "application/json" } }
                 );
             }
@@ -127,9 +129,10 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
         if (football_match_data !== undefined) updateData.football_match_data = football_match_data;
         if (yoyo_test_data !== undefined) updateData.yoyo_test_data = yoyo_test_data;
         if (notes !== undefined) updateData.notes = notes;
+        if (is_favorite !== undefined) updateData.is_favorite = is_favorite;
 
         const { data, error } = await supabase
-            .from("routines")
+            .from("routine_templates")
             .update(updateData)
             .eq("id", id)
             .eq("user_id", auth.user.id)
@@ -145,7 +148,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
 
         if (!data) {
             return new Response(
-                JSON.stringify({ error: "Routine not found" }),
+                JSON.stringify({ error: "Template not found" }),
                 { status: 404, headers: { "Content-Type": "application/json" } }
             );
         }
@@ -162,7 +165,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
     }
 };
 
-// DELETE - Eliminar una rutina
+// DELETE - Eliminar una rutina plantilla
 export const DELETE: APIRoute = async ({ params, cookies }) => {
     const auth = await verifyAuth(cookies);
 
@@ -177,13 +180,13 @@ export const DELETE: APIRoute = async ({ params, cookies }) => {
 
     if (!id) {
         return new Response(
-            JSON.stringify({ error: "Missing routine ID" }),
+            JSON.stringify({ error: "Missing template ID" }),
             { status: 400, headers: { "Content-Type": "application/json" } }
         );
     }
 
     const { error } = await supabase
-        .from("routines")
+        .from("routine_templates")
         .delete()
         .eq("id", id)
         .eq("user_id", auth.user.id);
@@ -196,7 +199,7 @@ export const DELETE: APIRoute = async ({ params, cookies }) => {
     }
 
     return new Response(
-        JSON.stringify({ message: "Routine deleted successfully" }),
+        JSON.stringify({ message: "Template deleted successfully" }),
         { status: 200, headers: { "Content-Type": "application/json" } }
     );
 };

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Routine } from "../../types";
 import { format } from "date-fns";
-import { Edit, Activity, Zap, Dumbbell, Footprints, ChevronDown, ChevronUp } from "lucide-react";
+import { Edit, Activity, Zap, Dumbbell, Footprints, ChevronDown, ChevronUp, Circle, Target } from "lucide-react";
 
 interface RoutinesDisplayProps {
     routines: Routine[];
@@ -16,6 +16,8 @@ const routineTypeLabels = {
     running: "Rodatge",
     gym: "Gimnàs",
     steps: "Passos",
+    football_match: "Partit de Futbol",
+    yoyo_test: "Yo-Yo Test",
 };
 
 const routineTypeIcons = {
@@ -23,6 +25,8 @@ const routineTypeIcons = {
     running: Zap,
     gym: Dumbbell,
     steps: Footprints,
+    football_match: Circle,
+    yoyo_test: Target,
 };
 
 export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayProps) {
@@ -57,6 +61,18 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
         if (routine.routine_type === "steps" && routine.steps_count !== undefined) {
             return `${routine.steps_count.toLocaleString()} passos`;
         }
+        if (routine.routine_type === "football_match" && routine.football_match_data) {
+            return `${routine.football_match_data.total_kms} km • ${routine.football_match_data.calories} cal`;
+        }
+        if (routine.routine_type === "yoyo_test" && routine.yoyo_test_data) {
+            const seriesCount = routine.yoyo_test_data.series?.length || 0;
+            if (seriesCount === 0) return "";
+            const firstSeries = routine.yoyo_test_data.series[0];
+            if (seriesCount === 1) {
+                return `Del ${firstSeries.start_level} al ${firstSeries.end_level}`;
+            }
+            return `${seriesCount} sèrie${seriesCount !== 1 ? 's' : ''}`;
+        }
         return "";
     };
 
@@ -66,7 +82,7 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                 const Icon = routineTypeIcons[routine.routine_type];
                 const isExpanded = expandedRoutines.has(routine.id);
                 const summary = getRoutineSummary(routine);
-                
+
                 return (
                     <Card key={routine.id} className="border-neutral-200 shadow-sm">
                         <CardContent className="p-3 sm:p-4">
@@ -195,6 +211,43 @@ export default function RoutinesDisplay({ routines, onEdit }: RoutinesDisplayPro
                                     {routine.routine_type === "steps" && routine.steps_count !== undefined && (
                                         <div className="text-lg sm:text-xl font-bold text-neutral-900">
                                             {routine.steps_count.toLocaleString()} passos
+                                        </div>
+                                    )}
+
+                                    {routine.routine_type === "football_match" && routine.football_match_data && (
+                                        <div className="space-y-2">
+                                            <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                                                <div>
+                                                    <span className="text-neutral-500">Quilòmetres:</span>
+                                                    <span className="ml-2 font-medium text-neutral-900">
+                                                        {routine.football_match_data.total_kms} km
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-neutral-500">Calories:</span>
+                                                    <span className="ml-2 font-medium text-neutral-900">
+                                                        {routine.football_match_data.calories} cal
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {routine.routine_type === "yoyo_test" && routine.yoyo_test_data && (
+                                        <div className="space-y-2">
+                                            <div className="text-xs sm:text-sm font-medium text-neutral-700">Sèries:</div>
+                                            {routine.yoyo_test_data.series?.map((serie, idx) => (
+                                                <div key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600">
+                                                    <Badge variant={serie.completed ? "default" : "outline"} className="text-xs">
+                                                        Del {serie.start_level} al {serie.end_level}
+                                                    </Badge>
+                                                    {serie.completed ? (
+                                                        <span className="text-green-600">✓ Completada</span>
+                                                    ) : (
+                                                        <span className="text-neutral-400">No completada</span>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
 

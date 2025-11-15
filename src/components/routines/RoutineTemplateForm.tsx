@@ -1,26 +1,28 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import type { Routine, RoutineType, AthleticsSeries, RunningData, GymExercise, GymSet, Exercise, YoYoSeries, FootballMatchData, YoYoTestData } from "../../types";
-import { format } from "date-fns";
-import { Plus, X, Trash2 } from "lucide-react";
+import type { RoutineTemplate, RoutineType, AthleticsSeries, RunningData, GymExercise, GymSet, Exercise, YoYoSeries, FootballMatchData } from "../../types";
+import { Plus, X, Trash2, Star } from "lucide-react";
 
-interface RoutinesFormProps {
-    date: Date;
-    routineType: RoutineType;
-    existingRecord?: Routine | null;
-    onSave: (record: Partial<Routine>) => Promise<void>;
+interface RoutineTemplateFormProps {
+    templateType: RoutineType;
+    existingTemplate?: RoutineTemplate | null;
+    onSave: (template: Partial<RoutineTemplate>) => Promise<void>;
     onDelete?: (id: string) => Promise<void>;
+    onCancel?: () => void;
 }
 
-export default function RoutinesForm({
-    date,
-    routineType,
-    existingRecord,
+export default function RoutineTemplateForm({
+    templateType,
+    existingTemplate,
     onSave,
     onDelete,
-}: RoutinesFormProps) {
+    onCancel,
+}: RoutineTemplateFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const [notes, setNotes] = useState("");
+    const [isFavorite, setIsFavorite] = useState(false);
 
     // Athletics state
     const [athleticsSeries, setAthleticsSeries] = useState<AthleticsSeries[]>([]);
@@ -53,7 +55,7 @@ export default function RoutinesForm({
 
     useEffect(() => {
         // Carregar exercicis disponibles per gimnàs
-        if (routineType === "gym") {
+        if (templateType === "gym") {
             fetch("/api/exercises?category=strength")
                 .then((res) => res.json())
                 .then((data) => setAvailableExercises(data.data || []))
@@ -61,71 +63,75 @@ export default function RoutinesForm({
         }
 
         // Carregar dades existents
-        if (existingRecord) {
-            setNotes(existingRecord.notes || "");
+        if (existingTemplate) {
+            setName(existingTemplate.name || "");
+            setDescription(existingTemplate.description || "");
+            setNotes(existingTemplate.notes || "");
+            setIsFavorite(existingTemplate.is_favorite || false);
 
-            if (existingRecord.routine_type === "athletics" && existingRecord.athletics_data) {
-                setAthleticsSeries(existingRecord.athletics_data.series || []);
-                setAthleticsTotalDistance(existingRecord.athletics_data.total_distance || "");
+            if (existingTemplate.routine_type === "athletics" && existingTemplate.athletics_data) {
+                setAthleticsSeries(existingTemplate.athletics_data.series || []);
+                setAthleticsTotalDistance(existingTemplate.athletics_data.total_distance || "");
             }
 
-            if (existingRecord.routine_type === "running" && existingRecord.running_data) {
-                setRunningDistance(existingRecord.running_data.distance_km?.toString() || "");
-                setRunningDuration(existingRecord.running_data.duration_minutes?.toString() || "");
-                setRunningPace(existingRecord.running_data.pace_per_km || "");
-                setRunningHeartRate(existingRecord.running_data.average_heart_rate?.toString() || "");
+            if (existingTemplate.routine_type === "running" && existingTemplate.running_data) {
+                setRunningDistance(existingTemplate.running_data.distance_km?.toString() || "");
+                setRunningDuration(existingTemplate.running_data.duration_minutes?.toString() || "");
+                setRunningPace(existingTemplate.running_data.pace_per_km || "");
+                setRunningHeartRate(existingTemplate.running_data.average_heart_rate?.toString() || "");
             }
 
-            if (existingRecord.routine_type === "gym" && existingRecord.gym_data) {
-                setGymExercises(existingRecord.gym_data.exercises || []);
-                setGymDuration(existingRecord.gym_data.total_duration_minutes?.toString() || "");
+            if (existingTemplate.routine_type === "gym" && existingTemplate.gym_data) {
+                setGymExercises(existingTemplate.gym_data.exercises || []);
+                setGymDuration(existingTemplate.gym_data.total_duration_minutes?.toString() || "");
             }
 
-            if (existingRecord.routine_type === "steps") {
-                setStepsCount(existingRecord.steps_count?.toString() || "");
+            if (existingTemplate.routine_type === "steps") {
+                setStepsCount(existingTemplate.steps_count?.toString() || "");
             }
 
-            if (existingRecord.routine_type === "football_match" && existingRecord.football_match_data) {
-                setFootballKms(existingRecord.football_match_data.total_kms?.toString() || "");
-                setFootballCalories(existingRecord.football_match_data.calories?.toString() || "");
+            if (existingTemplate.routine_type === "football_match" && existingTemplate.football_match_data) {
+                setFootballKms(existingTemplate.football_match_data.total_kms?.toString() || "");
+                setFootballCalories(existingTemplate.football_match_data.calories?.toString() || "");
             }
 
-            if (existingRecord.routine_type === "yoyo_test" && existingRecord.yoyo_test_data) {
-                setYoyoSeries(existingRecord.yoyo_test_data.series || []);
+            if (existingTemplate.routine_type === "yoyo_test" && existingTemplate.yoyo_test_data) {
+                setYoyoSeries(existingTemplate.yoyo_test_data.series || []);
             }
         } else {
             // Valors per defecte
-            if (routineType === "athletics") {
+            if (templateType === "athletics") {
                 setAthleticsSeries([{ distance: "", time: "", rest: "" }]);
             }
-            if (routineType === "gym") {
+            if (templateType === "gym") {
                 setGymExercises([]);
             }
         }
-    }, [existingRecord, routineType]);
+    }, [existingTemplate, templateType]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            const routineDate = format(date, "yyyy-MM-dd");
-            const routineData: Partial<Routine> = {
-                routine_date: routineDate,
-                routine_type: routineType,
+            const templateData: Partial<RoutineTemplate> = {
+                name,
+                description: description || undefined,
+                routine_type: templateType,
                 notes: notes || undefined,
+                is_favorite: isFavorite,
             };
 
-            if (routineType === "athletics") {
-                routineData.athletics_data = {
+            if (templateType === "athletics") {
+                templateData.athletics_data = {
                     series: athleticsSeries.filter((s) => s.distance && s.time),
                     total_distance: athleticsTotalDistance || undefined,
                     notes: notes || undefined,
                 };
             }
 
-            if (routineType === "running") {
-                routineData.running_data = {
+            if (templateType === "running") {
+                templateData.running_data = {
                     distance_km: parseFloat(runningDistance) || 0,
                     duration_minutes: parseInt(runningDuration) || 0,
                     pace_per_km: runningPace || "",
@@ -134,48 +140,57 @@ export default function RoutinesForm({
                 };
             }
 
-            if (routineType === "gym") {
-                routineData.gym_data = {
+            if (templateType === "gym") {
+                templateData.gym_data = {
                     exercises: gymExercises.filter((e) => e.exercise_id && e.sets.length > 0),
                     total_duration_minutes: gymDuration ? parseInt(gymDuration) : undefined,
                     notes: notes || undefined,
                 };
             }
 
-            if (routineType === "steps") {
-                routineData.steps_count = parseInt(stepsCount) || 0;
+            if (templateType === "steps") {
+                templateData.steps_count = parseInt(stepsCount) || 0;
             }
 
-            if (routineType === "football_match") {
-                routineData.football_match_data = {
+            if (templateType === "football_match") {
+                templateData.football_match_data = {
                     total_kms: parseFloat(footballKms) || 0,
                     calories: parseInt(footballCalories) || 0,
                     notes: notes || undefined,
                 };
             }
 
-            if (routineType === "yoyo_test") {
-                routineData.yoyo_test_data = {
+            if (templateType === "yoyo_test") {
+                templateData.yoyo_test_data = {
                     series: yoyoSeries.filter((s) => s.start_level && s.end_level),
                     notes: notes || undefined,
                 };
             }
 
-            await onSave(routineData);
+            await onSave(templateData);
         } catch (error) {
-            console.error("Error saving routine:", error);
+            console.error("Error saving template:", error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!existingRecord || !onDelete) return;
+        if (!existingTemplate || !onDelete) return;
 
-        if (confirm("Estàs segur que vols eliminar aquesta rutina?")) {
-            await onDelete(existingRecord.id);
+        if (confirm("Estàs segur que vols eliminar aquesta plantilla?")) {
+            await onDelete(existingTemplate.id);
         }
     };
+
+    // Generate Yo-Yo levels
+    const yoyoLevels = [];
+    for (let i = 0; i <= 20; i++) {
+        yoyoLevels.push(i.toString());
+        for (let j = 1; j <= 8; j++) {
+            yoyoLevels.push(`${i}.${j}`);
+        }
+    }
 
     // Athletics handlers
     const addAthleticsSeries = () => {
@@ -236,10 +251,6 @@ export default function RoutinesForm({
         setGymExercises(updated);
     };
 
-    const filteredExercises = availableExercises.filter((ex) =>
-        ex.name.toLowerCase().includes(exerciseSearch.toLowerCase())
-    );
-
     // Yo-Yo Test handlers
     const addYoyoSeries = () => {
         if (!yoyoNewStartLevel || !yoyoNewEndLevel) {
@@ -279,20 +290,57 @@ export default function RoutinesForm({
         setYoyoSeries(updated);
     };
 
-    // Generate Yo-Yo levels (0, 0.1, 0.2, ..., 0.8, 1, 1.1, ..., 20.8)
-    const yoyoLevels = [];
-    for (let i = 0; i <= 20; i++) {
-        yoyoLevels.push(i.toString());
-        // Afegir nivells decimals del .1 al .8 per cada número enter
-        for (let j = 1; j <= 8; j++) {
-            yoyoLevels.push(`${i}.${j}`);
-        }
-    }
+    const filteredExercises = availableExercises.filter((ex) =>
+        ex.name.toLowerCase().includes(exerciseSearch.toLowerCase())
+    );
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Nom i descripció */}
+            <div className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Nom de la rutina *
+                    </label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        placeholder="Ex: Entrenament de força superior"
+                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Descripció (opcional)
+                    </label>
+                    <input
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Breu descripció de la rutina"
+                        className="w-full px-3 py-2 bg-white border border-neutral-300 rounded-md"
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        id="isFavorite"
+                        checked={isFavorite}
+                        onChange={(e) => setIsFavorite(e.target.checked)}
+                        className="w-4 h-4"
+                    />
+                    <label htmlFor="isFavorite" className="flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
+                        <Star className={`h-4 w-4 ${isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                        Marcar com a favorita
+                    </label>
+                </div>
+            </div>
+
+            {/* Contingut específic del tipus de rutina - reutilitzar la lògica de RoutinesForm */}
             {/* Athletics Form */}
-            {routineType === "athletics" && (
+            {templateType === "athletics" && (
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -374,7 +422,7 @@ export default function RoutinesForm({
             )}
 
             {/* Running Form */}
-            {routineType === "running" && (
+            {templateType === "running" && (
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -432,7 +480,7 @@ export default function RoutinesForm({
             )}
 
             {/* Gym Form */}
-            {routineType === "gym" && (
+            {templateType === "gym" && (
                 <div className="space-y-6">
                     <div>
                         <label className="block text-base font-semibold text-neutral-900 mb-4">
@@ -466,7 +514,7 @@ export default function RoutinesForm({
                                                     onChange={(e) =>
                                                         updateGymSet(exerciseIndex, setIndex, "reps", parseInt(e.target.value))
                                                     }
-                                                    className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                                    className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md"
                                                 />
                                                 <input
                                                     type="number"
@@ -481,7 +529,7 @@ export default function RoutinesForm({
                                                             parseFloat(e.target.value)
                                                         )
                                                     }
-                                                    className="w-24 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                                    className="w-24 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md"
                                                 />
                                                 <input
                                                     type="number"
@@ -495,7 +543,7 @@ export default function RoutinesForm({
                                                             parseInt(e.target.value)
                                                         )
                                                     }
-                                                    className="w-28 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                                    className="w-28 px-3 py-2 text-sm bg-white border border-neutral-300 rounded-md"
                                                 />
                                                 {exercise.sets.length > 1 && (
                                                     <Button
@@ -535,7 +583,7 @@ export default function RoutinesForm({
                                         setShowExerciseSelector(true);
                                     }}
                                     onFocus={() => setShowExerciseSelector(true)}
-                                    className="w-full px-4 py-3 bg-white border-2 border-neutral-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-4 py-3 bg-white border-2 border-neutral-300 rounded-lg text-base"
                                 />
                                 {showExerciseSelector && filteredExercises.length > 0 && (
                                     <div className="absolute z-10 w-full mt-2 bg-white border-2 border-neutral-300 rounded-lg shadow-xl max-h-80 overflow-y-auto">
@@ -544,7 +592,7 @@ export default function RoutinesForm({
                                                 key={exercise.id}
                                                 type="button"
                                                 onClick={() => addGymExercise(exercise)}
-                                                className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm border-b border-neutral-100 last:border-b-0 transition-colors"
+                                                className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm border-b border-neutral-100 last:border-b-0"
                                             >
                                                 <div className="font-medium text-neutral-900">{exercise.name}</div>
                                                 {exercise.muscle_groups && exercise.muscle_groups.length > 0 && (
@@ -586,7 +634,7 @@ export default function RoutinesForm({
             )}
 
             {/* Steps Form */}
-            {routineType === "steps" && (
+            {templateType === "steps" && (
                 <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1.5">
                         Nombre de passos
@@ -602,7 +650,7 @@ export default function RoutinesForm({
             )}
 
             {/* Football Match Form */}
-            {routineType === "football_match" && (
+            {templateType === "football_match" && (
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -635,9 +683,8 @@ export default function RoutinesForm({
             )}
 
             {/* Yo-Yo Test Form */}
-            {routineType === "yoyo_test" && (
+            {templateType === "yoyo_test" && (
                 <div className="space-y-4">
-                    {/* Afegir nova sèrie amb rang */}
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                         <label className="block text-sm font-semibold text-neutral-900 mb-3">
                             Afegir sèrie Yo-Yo Test
@@ -686,7 +733,6 @@ export default function RoutinesForm({
                         </Button>
                     </div>
 
-                    {/* Llista de sèries */}
                     <div>
                         <label className="block text-sm font-medium text-neutral-700 mb-2">
                             Sèries Yo-Yo Test ({yoyoSeries.length} sèrie{yoyoSeries.length !== 1 ? 's' : ''})
@@ -781,9 +827,18 @@ export default function RoutinesForm({
                     disabled={isSubmitting}
                     className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
                 >
-                    {isSubmitting ? "Desant..." : existingRecord ? "Actualitzar" : "Guardar"}
+                    {isSubmitting ? "Desant..." : existingTemplate ? "Actualitzar" : "Guardar plantilla"}
                 </Button>
-                {existingRecord && onDelete && (
+                {onCancel && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onCancel}
+                    >
+                        Cancel·lar
+                    </Button>
+                )}
+                {existingTemplate && onDelete && (
                     <Button
                         type="button"
                         variant="destructive"
